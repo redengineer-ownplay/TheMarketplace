@@ -8,10 +8,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
-import { UserService } from './user.service';
-import { WalletAuthGuard } from '../common/guards/wallet-auth.guard';
+import { UserService } from './services/user.service';
+import { WalletAuthGuard } from 'src/common/guards/wallet-auth.guard';
 import { UpdateUserDto } from './dto/user.dto';
-import { User } from '../common/decorators/user.decorator';
+import { User } from 'src/common/decorators/user.decorator';
 
 interface JwtPayload {
   walletAddress: string;

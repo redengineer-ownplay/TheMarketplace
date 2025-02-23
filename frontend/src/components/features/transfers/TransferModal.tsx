@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useToast } from '@/hooks/useToast';
 import { Loader2 } from 'lucide-react';
 import Web3 from 'web3';
-import { TransactionStatus } from '../transactions/TransactionStatus';
+import { TransactionStatus } from '@/components/features/transactions/TransactionStatus';
 import { useAppStore } from '@/store';
 import { useWallet } from '@/providers/WalletProvider';
 import { NFT } from '@/types/nft';

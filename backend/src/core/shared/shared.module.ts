@@ -1,6 +1,6 @@
 import { Module, Global } from '@nestjs/common';
-import { UserService } from '../user/user.service';
-import { AuthService } from '../auth/auth.service';
+import { UserService } from 'src/features/user/services/user.service';
+import { AuthService } from 'src/core/auth/auth.service';
 
 @Global()
 @Module({

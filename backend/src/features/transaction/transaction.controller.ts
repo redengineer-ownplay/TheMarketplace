@@ -1,8 +1,8 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
-import { TransactionService } from './transaction.service';
-import { WalletAuthGuard } from '../common/guards/wallet-auth.guard';
-import { PaginationDto } from '../nft/dto/pagination.dto';
+import { TransactionService } from 'src/features/transaction/services/transaction.service';
+import { WalletAuthGuard } from 'src/common/guards/wallet-auth.guard';
+import { PaginationDto } from 'src/features/nft/dto/pagination.dto';
 
 @ApiTags('Transactions')
 @Controller('transactions')

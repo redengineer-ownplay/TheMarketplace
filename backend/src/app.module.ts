@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { UserModule } from './user/user.module';
-import { NftModule } from './nft/nft.module';
-import { AuthModule } from './auth/auth.module';
-import { SupabaseModule } from './supabase/supabase.module';
-import { SharedModule } from './shared/shared.module';
-import { TransactionModule } from './transaction/transaction.module';
-import { CacheModule } from './cache/cache.module';
+import { NftModule } from './features/nft/nft.module';
+import { AuthModule } from './core/auth/auth.module';
+import { SupabaseModule } from './core/database/supabase.module';
+import { SharedModule } from './core/shared/shared.module';
+import { TransactionModule } from './features/transaction/transaction.module';
+import { CacheModule } from './core/cache/cache.module';
 
 @Module({
   imports: [

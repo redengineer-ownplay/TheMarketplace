@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from 'src/core/auth/auth.service';
 
 @Injectable()
 export class WalletAuthGuard implements CanActivate {

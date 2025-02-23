@@ -2,14 +2,14 @@ import { Injectable, Inject, BadRequestException, NotFoundException, Logger } fr
 import { ethers } from 'ethers';
 import { ConfigService } from '@nestjs/config';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { NFTMetadataService } from './services/metadata.service';
-import { Transaction } from './interfaces/transaction.interface';
+import { NFTMetadataService } from './metadata.service';
+import { Transaction } from '../interfaces/transaction.interface';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
-import { UpdateTransactionDto } from './dto/transfer.dto';
-import { PaginationDto } from './dto/pagination.dto';
-import { TransactionService } from 'src/transaction/transaction.service';
-import { CacheService } from 'src/cache/cache.service';
+import { UpdateTransactionDto } from '../dto/transfer.dto';
+import { PaginationDto } from '../dto/pagination.dto';
+import { TransactionService } from 'src/features/transaction/services/transaction.service';
+import { CacheService } from 'src/core/cache/cache.service';
 
 @Injectable()
 export class NftService {

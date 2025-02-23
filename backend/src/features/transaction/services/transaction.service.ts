@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { ConfigService } from '@nestjs/config';
-import { PaginationDto } from 'src/nft/dto/pagination.dto';
-import { CacheService } from 'src/cache/cache.service';
+import { PaginationDto } from 'src/features/nft/dto/pagination.dto';
+import { CacheService } from 'src/core/cache/cache.service';
 
 @Injectable()
 export class TransactionService {

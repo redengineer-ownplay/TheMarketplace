@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEVMAddress } from '../../common/pipes/evm-address.validator';
+import { IsEVMAddress } from 'src/common/pipes/evm-address.validator';
 
 export class WalletAuthDto {
   @ApiProperty({

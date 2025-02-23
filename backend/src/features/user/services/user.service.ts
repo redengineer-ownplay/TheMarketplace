@@ -1,6 +1,6 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { UpdateUserDto } from './dto/user.dto';
+import { UpdateUserDto } from '../dto/user.dto';
 
 @Injectable()
 export class UserService {

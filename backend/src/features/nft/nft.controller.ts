@@ -11,11 +11,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { NftService } from './nft.service';
-import { WalletAuthGuard } from '../common/guards/wallet-auth.guard';
+import { NftService } from './services/nft.service';
+import { WalletAuthGuard } from 'src/common/guards/wallet-auth.guard';
 import { TransferNFTDto, UpdateTransactionDto } from './dto/nft.dto';
 import { PaginationDto } from './dto/pagination.dto';
-import { User } from '../common/decorators/user.decorator';
+import { User } from 'src/common/decorators/user.decorator';
 
 @ApiTags('NFTs')
 @Controller('nfts')

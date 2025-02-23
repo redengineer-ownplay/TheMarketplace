@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { ethers } from 'ethers';
 import axios from 'axios';
-import { formatTokenUrl } from '../../utils/strings/formatTokenUrl';
-import { isHtmlResponse } from '../../utils/html/isHtmlResponse';
+import { formatTokenUrl } from 'src/utils/strings/formatTokenUrl';
+import { isHtmlResponse } from 'src/utils/html/isHtmlResponse';
 
 @Injectable()
 export class NFTMetadataService {

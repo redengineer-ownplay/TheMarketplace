@@ -1,6 +1,6 @@
 import { IsString, IsEnum, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEVMAddress } from '../../common/pipes/evm-address.validator';
+import { IsEVMAddress } from 'src/common/pipes/evm-address.validator';
 
 export enum NFTType {
   ERC721 = 'ERC721',

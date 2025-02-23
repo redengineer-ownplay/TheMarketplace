@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { NftService } from './nft.service';
+import { NftService } from './services/nft.service';
 import { NftController } from './nft.controller';
 import { NFTMetadataService } from './services/metadata.service';
 import { ConfigModule } from '@nestjs/config';
-import { CacheService } from 'src/cache/cache.service';
+import { CacheService } from 'src/core/cache/cache.service';
 
 @Module({
   imports: [ConfigModule],

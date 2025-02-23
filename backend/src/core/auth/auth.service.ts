@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ethers } from 'ethers';
 import { ConfigService } from '@nestjs/config';
-import { UserService } from '../user/user.service';
+import { UserService } from 'src/features/user/services/user.service';
 import * as jwt from 'jsonwebtoken';
 import { SupabaseClient } from '@supabase/supabase-js';
 
