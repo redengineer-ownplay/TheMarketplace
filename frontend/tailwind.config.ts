@@ -34,6 +34,9 @@ export default {
         md: `calc(var(--radius) - 2px)`,
         sm: 'calc(var(--radius) - 4px)',
       },
+      scale: {
+        '102': '1.02',
+      },
     },
   },
   plugins: [],
