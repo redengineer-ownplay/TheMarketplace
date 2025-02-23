@@ -19,6 +19,19 @@ Before you begin, ensure you have the following installed:
 - Docker & Docker Compose
 - MetaMask browser extension
 
+## Database
+
+If you prefer to use the `./dbschema/index.sql` in your Supabase custom project feel free, although I've pushed the credentials in the .env.example as this is a dummy account for the project. Note in real world scenario, I would never push these credentials in git,svn or any other source control
+
+### In case you prefer to use the SQL schema provided
+
+1. Go to Supabase
+2. Login
+3. Create Project
+4. Go to SQL Editor
+5. Copy contents from `./dbschema/index.sql` SQL Schema
+6. Run and it
+
 ## Environment Setup
 
 1. Clone the repository:
