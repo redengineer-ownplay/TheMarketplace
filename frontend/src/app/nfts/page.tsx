@@ -1,15 +1,13 @@
-'use client'
+import { Metadata } from 'next'
+import { generateMetadata } from '@/config/seo/metadata'
+import NFTsPageComponent from '@/components/pages/NftPage'
 
-import { NFTGallery } from '@/components/features/nfts/NFTGallery'
-import { Protected } from '@/components/features/wallet/Protected'
+export const metadata: Metadata = generateMetadata({
+  title: 'My NFTs | Web3 Wallet Platform',
+  description: 'View and manage your NFT collection on the Polygon blockchain.',
+  path: '/nfts',
+})
 
 export default function NFTsPage() {
-  return (
-    <Protected>
-      <div className="p-8">
-        <h1 className="text-3xl font-bold mb-6">My NFTs</h1>
-        <NFTGallery />
-      </div>
-    </Protected>
-  )
+  return <NFTsPageComponent />
 }

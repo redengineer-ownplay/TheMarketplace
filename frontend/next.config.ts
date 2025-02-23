@@ -1,8 +1,9 @@
+// next.config.ts
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  poweredByHeader: false,
+  poweredByHeader: false, // Security best practice
   images: {
     remotePatterns: [
       {
@@ -10,6 +11,7 @@ const nextConfig: NextConfig = {
         hostname: '**',
       },
     ],
+    formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
   },
   compiler: {
@@ -21,6 +23,7 @@ const nextConfig: NextConfig = {
   httpAgentOptions: {
     keepAlive: true,
   },
+  compress: true,
 };
 
 export default nextConfig;
