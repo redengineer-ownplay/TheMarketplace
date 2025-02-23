@@ -37,7 +37,7 @@ export const endpoints = {
     method: 'PUT',
   },
 
-  // Transaction endpoints
+  // Transactions
   getTransactions: {
     url: '/transactions/:walletAddress',
     method: 'GET',
