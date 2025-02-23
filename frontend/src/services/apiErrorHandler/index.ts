@@ -17,7 +17,7 @@ export type GenericErrorResponse<Details> = ApiErrorResponse<Details>
  * @param {ResponseError<GenericErrorResponse>} error - The error to handle.
  */
 export const handleErrorResponse = async (
-  error: ResponseError<GenericErrorResponse<[]>,
+  error: ResponseError<GenericErrorResponse<[]>>,
 ): Promise<void> => {
   if (error.status === 401) {
     localStorage.removeItem('jwt_token');
