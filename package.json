@@ -1,0 +1,38 @@
+{
+  "name": "web3-wallet-platform",
+  "version": "1.0.0",
+  "description": "Web3 Wallet Platform with NFT Transfer Capabilities",
+  "main": "index.js",
+  "scripts": {
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "start": "concurrently \"npm run docker:up\" \"npm run start:frontend\" \"npm run start:backend\"",
+    "start:frontend": "cd frontend && npm run dev",
+    "start:backend": "cd backend && npm run start:dev",
+    "build": "concurrently \"npm run build:frontend\" \"npm run build:backend\"",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "test": "concurrently \"npm run test:frontend\" \"npm run test:backend\"",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && npm test",
+    "lint": "concurrently \"npm run lint:frontend\" \"npm run lint:backend\"",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "format": "concurrently \"npm run format:frontend\" \"npm run format:backend\"",
+    "format:frontend": "cd frontend && npm run lint",
+    "format:backend": "cd backend && npm run lint",
+    "docker:up": "docker-compose up -d"
+  },
+  "keywords": [
+    "web3",
+    "nft",
+    "wallet",
+    "blockchain",
+    "ethereum",
+    "polygon"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
