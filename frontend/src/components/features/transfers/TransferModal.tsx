@@ -320,7 +320,7 @@ export const TransferModal = memo(function TransferModal({
             </div>
 
             {transferStatus && (
-              <div className="text-sm text-primary flex items-center animate-fade-in">
+              <div className="text-sm text-whitesmoke flex items-center animate-fade-in">
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 {transferStatus}
               </div>

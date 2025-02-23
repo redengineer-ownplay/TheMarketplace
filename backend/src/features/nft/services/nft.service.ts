@@ -15,7 +15,7 @@ export class NftService {
   private readonly logger = new Logger(NftService.name);
   private provider: ethers.providers.JsonRpcProvider;
   private wallet: ethers.Wallet;
-  private readonly CACHE_KEY_PREFIX = 'NFTS_LIST_';
+  public static readonly CACHE_KEY_PREFIX = 'NFTS_LIST_';
   private readonly TRANSACTIONS_HISTORY = TransactionService.CACHE_KEY_PREFIX;
 
   // Basic ABI for NFT transfers
@@ -49,7 +49,7 @@ export class NftService {
 
   async getNFTs(walletAddress: string, { limit = 10, offset = 0 }: PaginationDto) {
     try {
-      const cacheKey = `${this.CACHE_KEY_PREFIX}${walletAddress}_${limit}_${offset}`;
+      const cacheKey = `${NftService.CACHE_KEY_PREFIX}${walletAddress}_${limit}_${offset}`;
 
       const cachedNFTs = await this.cacheService.get(cacheKey);
       if (cachedNFTs) {
@@ -320,6 +320,9 @@ export class NftService {
         throw new Error('Failed to create transaction record');
       }
 
+      this.clearCache(fromAddress);
+      this.clearCache(toAddress);
+
       return {
         id: transactionId,
         fromAddress,
@@ -373,15 +376,37 @@ export class NftService {
   }
 
   async clearCache(walletAddress: string) {
-    const cacheKeyFromAddress = `${this.CACHE_KEY_PREFIX}${walletAddress}*`;
+    const cacheKeyFromAddress = `${NftService.CACHE_KEY_PREFIX}${walletAddress}*`;
     const cacheKeyTransactionsHistoryFromAddress = `${this.TRANSACTIONS_HISTORY}${walletAddress}*`;
 
-    const keys = [
-      await this.cacheService.keys(cacheKeyFromAddress),
-      await this.cacheService.keys(cacheKeyTransactionsHistoryFromAddress),
-    ].flat();
+    const keysFromAddress = await this.cacheService.keys(cacheKeyFromAddress);
+    const keysTransactionsHistory = await this.cacheService.keys(
+      cacheKeyTransactionsHistoryFromAddress,
+    );
+    const keys = [...keysFromAddress, ...keysTransactionsHistory];
 
-    return Promise.all(keys.map(async key => this.cacheService.del(key)));
+    this.logger.log(`Clearing cache for wallet ${walletAddress}: keys [${keys.join(', ')}]`);
+
+    await Promise.all(
+      keys.map(async key => {
+        await this.cacheService.del(key);
+        this.logger.log(`Deleted cache key: ${key}`);
+      }),
+    );
+
+    const remainingKeysFromAddress = await this.cacheService.keys(cacheKeyFromAddress);
+    const remainingKeysTransactionsHistory = await this.cacheService.keys(
+      cacheKeyTransactionsHistoryFromAddress,
+    );
+    const remainingKeys = [...remainingKeysFromAddress, ...remainingKeysTransactionsHistory];
+
+    if (remainingKeys.length > 0) {
+      this.logger.error(
+        `Cache clearance incomplete for wallet ${walletAddress}. Remaining keys: ${remainingKeys.join(', ')}`,
+      );
+    } else {
+      this.logger.log(`Cache successfully cleared for wallet ${walletAddress}`);
+    }
   }
 
   async updateTransactionStatus(
@@ -393,9 +418,6 @@ export class NftService {
     if (!transaction) {
       throw new BadRequestException('Transaction not found');
     }
-
-    await this.clearCache(transaction.fromAddress);
-    await this.clearCache(transaction.toAddress);
 
     const { error: updateError } = await this.supabase
       .from('transactions')
@@ -410,6 +432,9 @@ export class NftService {
     if (updateError) {
       throw new Error('Failed to update transaction status');
     }
+
+    await this.clearCache(transaction.fromAddress);
+    await this.clearCache(transaction.toAddress);
 
     return this.getTransactionStatus(transactionId);
   }
