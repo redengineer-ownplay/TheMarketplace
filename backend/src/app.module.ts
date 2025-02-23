@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
-import { UserModule } from './user/user.module';
+import { UserModule } from './features/user/user.module';
 import { NftModule } from './features/nft/nft.module';
 import { AuthModule } from './core/auth/auth.module';
 import { SupabaseModule } from './core/database/supabase.module';
