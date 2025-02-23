@@ -1,23 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
+import { useState, useEffect, useCallback, memo } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { useToast } from '@/hooks/useToast';
 import { Loader2 } from 'lucide-react';
 import Web3 from 'web3';
-import { TransactionStatus } from '@/components/features/transactions/TransactionStatus';
+import { TransactionStatus } from '@/components/features/transfers/TransactionStatus';
 import { useAppStore } from '@/store';
 import { useWallet } from '@/providers/WalletProvider';
 import { NFT } from '@/types/nft';
 import { getUserProfileByUsername } from '@/services/api/userProfile';
 import { useTransferNFT } from '@/services/api/nft/hooks';
-
-interface TransferModalProps {
-  nft: NFT;
-  isOpen: boolean;
-  onClose: () => void;
-  onTransferComplete: () => void;
-}
+import { debounce } from '@/utils/performance/debounce';
 
 const ERC721_ABI = [
   {
@@ -69,7 +63,19 @@ const ERC1155_ABI = [
   }
 ];
 
-export function TransferModal({ nft, isOpen, onClose, onTransferComplete }: TransferModalProps) {
+interface TransferModalProps {
+  nft: NFT;
+  isOpen: boolean;
+  onClose: () => void;
+  onTransferComplete: () => void;
+}
+
+export const TransferModal = memo(function TransferModal({ 
+  nft, 
+  isOpen, 
+  onClose, 
+  onTransferComplete 
+}: TransferModalProps) {
   const { address } = useWallet();
   const { toast } = useToast();
   const { transfer, updateStatus } = useTransferNFT();
@@ -92,40 +98,44 @@ export function TransferModal({ nft, isOpen, onClose, onTransferComplete }: Tran
     }
   }, [isOpen, resetTransfer]);
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (recipientUsername) {
-        validateUsername(recipientUsername);
-      } else {
+  const validateUsername = useCallback(
+    debounce(async (username: string) => {
+      if (!username) {
         setRecipientAddress('');
+        setIsValidating(false);
+        return;
       }
-    }, 500);
-    return () => clearTimeout(timeoutId);
-  }, [recipientUsername]);
 
-  const validateUsername = async (username: string) => {
-    setIsValidating(true);
-    try {
-      const response = await getUserProfileByUsername({ username });
+      setIsValidating(true);
+      try {
+        const response = await getUserProfileByUsername({ username });
 
-      if (response?.wallet_address) {
-        setRecipientUsername(response.username || '');
-        setRecipientAddress(response.wallet_address);
+        if (response?.wallet_address) {
+          setRecipientUsername(response.username || '');
+          setRecipientAddress(response.wallet_address);
+        } else {
+          setRecipientAddress('');
+        }
+      } catch (error) {
+        console.error('Error validating username:', error);
+        toast({
+          title: 'Error',
+          description: 'Username not found',
+          variant: 'destructive',
+        });
+        setRecipientAddress('');
+      } finally {
+        setIsValidating(false);
       }
-    } catch (error) {
-      console.error('Error validating username:', error);
-      toast({
-        title: 'Error',
-        description: 'Username not found',
-        variant: 'destructive',
-      });
-      setRecipientAddress('');
-    } finally {
-      setIsValidating(false);
-    }
-  };
+    }, 500),
+    [toast]
+  );
 
-  const waitForTransaction = async (web3: Web3, txHash: string): Promise<void> => {
+  useEffect(() => {
+    validateUsername(recipientUsername);
+  }, [recipientUsername, validateUsername]);
+
+  const waitForTransaction = useCallback(async (web3: Web3, txHash: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       const checkReceipt = async () => {
         try {
@@ -149,9 +159,9 @@ export function TransferModal({ nft, isOpen, onClose, onTransferComplete }: Tran
       };
       checkReceipt();
     });
-  };
+  }, []);
 
-  const handleTransfer = async () => {
+  const handleTransfer = useCallback(async () => {
     if (!window.ethereum || !address || !recipientAddress) {
       toast({
         title: 'Error',
@@ -171,13 +181,13 @@ export function TransferModal({ nft, isOpen, onClose, onTransferComplete }: Tran
       const response = await transfer({
         walletAddress: address,
       },{
-        recipient: address,
+        recipient: recipientAddress,
         contractAddress: nft.contractAddress,
         tokenId: nft.tokenId,
         tokenType: nft.tokenType,
-      })
+      });
       
-      const transferId = response.id
+      const transferId = response.id;
       
       setActiveTransfer({
         id: transferId,
@@ -230,7 +240,6 @@ export function TransferModal({ nft, isOpen, onClose, onTransferComplete }: Tran
 
       setShowTransactionStatus(true);
       onTransferComplete();
-      onClose();
 
     } catch (error) {
       console.error('Transfer error:', error);
@@ -257,7 +266,20 @@ export function TransferModal({ nft, isOpen, onClose, onTransferComplete }: Tran
     } finally {
       setTransferring(false);
     }
-  };
+  }, [
+    address, 
+    nft, 
+    recipientAddress, 
+    toast, 
+    transfer, 
+    updateStatus, 
+    setActiveTransfer, 
+    setTransferStatus, 
+    setTransferring, 
+    waitForTransaction, 
+    activeTransfer, 
+    onTransferComplete
+  ]);
 
   return (
     <>
@@ -268,37 +290,37 @@ export function TransferModal({ nft, isOpen, onClose, onTransferComplete }: Tran
           </DialogHeader>
 
           <div className="p-4 space-y-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-medium">{nft?.metadata?.name || 'NFT'}</h3>
-              <p className="text-sm text-gray-500">Token ID: {nft?.tokenId}</p>
-              <p className="text-sm text-gray-500">Type: {nft?.tokenType}</p>
+            <div className="p-4 bg-secondary/20 rounded-lg">
+              <h3 className="font-medium text-foreground">{nft?.metadata?.name || 'NFT'}</h3>
+              <p className="text-sm text-muted-foreground">Token ID: {nft?.tokenId}</p>
+              <p className="text-sm text-muted-foreground">Type: {nft?.tokenType}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="form-group">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Recipient Username
               </label>
               <input
                 type="text"
                 value={recipientUsername}
                 onChange={(e) => setRecipientUsername(e.target.value)}
-                className="w-full p-2 border rounded-md"
+                className="input w-full"
                 placeholder="Enter username"
                 disabled={isTransferring}
               />
               {isValidating && (
-                <p className="text-sm text-gray-500 mt-1 flex items-center">
+                <p className="text-sm text-muted-foreground mt-1 flex items-center">
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Validating username...
                 </p>
               )}
               {recipientAddress && (
-                <p className="text-sm text-green-600 mt-1">Recipient found!</p>
+                <p className="text-sm text-success mt-1">Recipient found!</p>
               )}
             </div>
 
             {transferStatus && (
-              <div className="text-sm text-blue-600 flex items-center">
+              <div className="text-sm text-primary flex items-center animate-fade-in">
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 {transferStatus}
               </div>
@@ -307,7 +329,7 @@ export function TransferModal({ nft, isOpen, onClose, onTransferComplete }: Tran
             <div className="flex justify-end space-x-2 pt-4">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700"
+                className="button button-secondary"
                 disabled={isTransferring}
               >
                 Cancel
@@ -315,7 +337,7 @@ export function TransferModal({ nft, isOpen, onClose, onTransferComplete }: Tran
               <button
                 onClick={handleTransfer}
                 disabled={isTransferring || !recipientAddress}
-                className="px-4 py-2 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center"
+                className="button button-primary flex items-center"
               >
                 {isTransferring ? (
                   <>
@@ -327,21 +349,21 @@ export function TransferModal({ nft, isOpen, onClose, onTransferComplete }: Tran
                 )}
               </button>
             </div>
+
+            {activeTransfer && (
+              <TransactionStatus
+                transferId={activeTransfer.id}
+                isOpen={showTransactionStatus}
+                onClose={() => {
+                  setShowTransactionStatus(false);
+                  resetTransfer();
+                }}
+                onComplete={onTransferComplete}
+              />
+            )}
           </div>
         </DialogContent>
       </Dialog>
-
-      {activeTransfer && (
-        <TransactionStatus
-          transferId={activeTransfer.id}
-          isOpen={showTransactionStatus}
-          onClose={() => {
-            setShowTransactionStatus(false);
-            resetTransfer();
-          }}
-          onComplete={onTransferComplete}
-        />
-      )}
     </>
   );
-}
+});

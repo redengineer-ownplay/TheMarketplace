@@ -1,16 +1,15 @@
-'use client'
-
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useWallet } from '@/providers/WalletProvider'
 import { useToast } from '@/hooks/useToast'
-import { NFTCardSkeleton } from '@/components/ui/Loading'
-import { TransferModal } from '@/components/features/transfers/TransferModal'
-import SafeImage from '@/components/ui/SafeImage'
 import { useGetNFTs } from '@/services/api/nft/hooks'
 import { getNFTs } from '@/services/api/nft'
 import { useAppStore } from '@/store'
 import { NFT } from '@/types/nft'
 import { Loader2 } from 'lucide-react'
+import { TransferModal } from '@/components/features/transfers/TransferModal'
+import { NFTCard } from '@/components/features/nfts/NFTCard'
+
+const ITEMS_PER_PAGE = 12;
 
 export function NFTGallery() {
   const { address } = useWallet()
@@ -18,6 +17,7 @@ export function NFTGallery() {
   const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null)
   const [showTransferModal, setShowTransferModal] = useState(false)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const loadMoreRef = useRef<HTMLDivElement>(null)
   
   const nfts = useAppStore().use.nfts()
   const nftListHasMore = useAppStore().use.nftListHasMore()
@@ -27,17 +27,33 @@ export function NFTGallery() {
 
   const { isLoading, error } = useGetNFTs(
     { walletAddress: address || "" },
-    { limit: 12, offset: 0 }
+    { limit: ITEMS_PER_PAGE, offset: 0 }
   );
 
-  const handleLoadMore = async () => {
+  useEffect(() => {
+    if (!loadMoreRef.current || !nftListHasMore) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isLoadingMore) {
+          handleLoadMore();
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [nftListHasMore, isLoadingMore]);
+
+  const handleLoadMore = useCallback(async () => {
     if (!address || isLoadingMore) return;
 
     setIsLoadingMore(true);
     try {
       await getNFTs(
         { walletAddress: address },
-        { limit: 12, offset: nftListOffset }
+        { limit: ITEMS_PER_PAGE, offset: nftListOffset }
       );
     } catch (error) {
       console.error('Error loading more NFTs:', error);
@@ -49,13 +65,19 @@ export function NFTGallery() {
     } finally {
       setIsLoadingMore(false);
     }
-  };
+  }, [address, nftListOffset, isLoadingMore, toast]);
 
   if (isLoading && !hasNFTs) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
         {Array.from({ length: 8 }).map((_, index) => (
-          <NFTCardSkeleton key={index} />
+          <div key={index} className="nft-card animate-pulse">
+            <div className="aspect-square bg-secondary/50 rounded-lg" />
+            <div className="mt-4 space-y-3">
+              <div className="h-4 bg-secondary/50 rounded w-3/4" />
+              <div className="h-4 bg-secondary/50 rounded w-1/2" />
+            </div>
+          </div>
         ))}
       </div>
     );
@@ -71,69 +93,42 @@ export function NFTGallery() {
 
   if (!hasNFTs) {
     return (
-      <div className="text-center py-12">
-        <h3 className="text-lg font-medium text-gray-900">No NFTs found</h3>
-        <p className="mt-2 text-sm text-gray-500">
+      <div className="text-center py-12 animate-fade-in">
+        <h3 className="text-lg font-medium text-foreground">No NFTs found</h3>
+        <p className="mt-2 text-sm text-muted-foreground">
           Once you receive NFTs, they will appear here.
         </p>
       </div>
     );
   }
 
-  const handleTransferClick = (nft: NFT) => {
-    setSelectedNFT(nft);
-    setShowTransferModal(true);
-  };
-
-  const handleTransferComplete = () => {
-    setShowTransferModal(false);
-    setSelectedNFT(null);
-    clearNFTs();
-  };
-
   return (
-    <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {nfts.map((nft) => (
-          <div
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {nfts.map((nft, index) => (
+          <NFTCard
             key={`${nft.contractAddress}-${nft.tokenId}`}
-            className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-          >
-            <div className="aspect-square relative">
-              {nft.metadata.image && (
-                <SafeImage 
-                  src={nft.metadata.image}
-                  alt={nft.metadata.name || 'NFT'}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-              )}
-            </div>
-            <div className="p-4">
-              <h3 className="font-medium text-gray-900 truncate">
-                {nft.metadata.name || 'Unnamed NFT'}
-              </h3>
-              {nft.metadata.description && (
-                <p className="mt-1 text-sm text-gray-500 line-clamp-2">
-                  {nft.metadata.description}
-                </p>
-              )}
-              <div className="mt-2 flex justify-between items-center">
-                <span className="text-sm text-gray-500">
-                  Token ID: {nft.tokenId}
-                </span>
-                <button
-                  onClick={() => handleTransferClick(nft)}
-                  className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors"
-                >
-                  Transfer
-                </button>
-              </div>
-            </div>
-          </div>
+            nft={nft}
+            onTransferClick={() => {
+              setSelectedNFT(nft);
+              setShowTransferModal(true);
+            }}
+            className={`animate-slide-up`}
+            style={{ animationDelay: `${index * 0.1}s` }}
+          />
         ))}
       </div>
+
+      {nftListHasMore && (
+        <div 
+          ref={loadMoreRef}
+          className="mt-8 flex justify-center"
+        >
+          {isLoadingMore && (
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          )}
+        </div>
+      )}
 
       {selectedNFT && (
         <TransferModal
@@ -143,28 +138,20 @@ export function NFTGallery() {
             setShowTransferModal(false);
             setSelectedNFT(null);
           }}
-          onTransferComplete={handleTransferComplete}
+          onTransferComplete={() => {
+            setShowTransferModal(false);
+            setSelectedNFT(null);
+
+            setTimeout(() => {
+              clearNFTs();
+              getNFTs(
+                { walletAddress: address || "" },
+                { limit: ITEMS_PER_PAGE, offset: 0 }
+              )
+            }, 1000)
+          }}
         />
       )}
-      
-      {nftListHasMore && (
-        <div className="mt-8 text-center">
-          <button
-            onClick={handleLoadMore}
-            disabled={isLoadingMore}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center mx-auto"
-          >
-            {isLoadingMore ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Loading...
-              </>
-            ) : (
-              'Load More'
-            )}
-          </button>
-        </div>
-      )}
-    </div>
+    </>
   );
 }

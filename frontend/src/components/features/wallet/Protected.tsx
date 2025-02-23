@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { useWallet } from '@/providers/WalletProvider'
 import { ConnectWalletPrompt } from '@/components/features/wallet/ConnectWalletPrompt'
 
@@ -5,7 +6,7 @@ interface ProtectedProps {
   children: React.ReactNode
 }
 
-export function Protected({ children }: ProtectedProps) {
+export const Protected = memo(function Protected({ children }: ProtectedProps) {
   const { address } = useWallet()
 
   if (!address) {
@@ -13,4 +14,4 @@ export function Protected({ children }: ProtectedProps) {
   }
 
   return <>{children}</>
-}
+})

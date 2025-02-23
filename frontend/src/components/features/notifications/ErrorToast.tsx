@@ -1,15 +1,18 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef, memo } from 'react';
 import { useToast } from '@/hooks/useToast';
 import { useAppStore } from '@/store';
 
-export function ErrorToast() {
+export const ErrorToast = memo(function ErrorToast() {
   const error = useAppStore().use.errors()
   const { toast } = useToast();
+  const lastErrorRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (error[0]) {
+    if (error.length > 0 && error[0].message !== lastErrorRef.current) {
+      lastErrorRef.current = error[0].message;
+      
       toast({
         title: 'Error',
         description: error[0].message,
@@ -20,4 +23,4 @@ export function ErrorToast() {
   }, [error, toast]);
 
   return null;
-}
+})

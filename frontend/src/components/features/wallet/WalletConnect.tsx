@@ -1,19 +1,19 @@
-'use client'
-
+import { memo } from 'react'
 import { useWallet } from '@/providers/WalletProvider'
 import { Loader2 } from 'lucide-react'
+import { shortenAddress } from '@/utils/string/shortenWeb3Address'
 
-export function ConnectWallet() {
+export const WalletConnect = memo(function WalletConnect() {
   const { address, connect, disconnect, isConnecting } = useWallet()
 
   if (isConnecting) {
     return (
       <button 
-        className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg"
+        className="flex items-center space-x-2 px-4 py-2 bg-secondary/30 text-muted-foreground rounded-lg"
         disabled
       >
-        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-        Connecting...
+        <Loader2 className="w-4 h-4 animate-spin" />
+        <span>Connecting...</span>
       </button>
     )
   }
@@ -21,12 +21,12 @@ export function ConnectWallet() {
   if (address) {
     return (
       <div className="flex items-center space-x-4">
-        <span className="text-sm text-gray-600">
-          {`${address.slice(0, 6)}...${address.slice(-4)}`}
+        <span className="text-sm font-mono bg-secondary/20 px-3 py-1 rounded-md text-muted-foreground">
+          {shortenAddress(address)}
         </span>
         <button
           onClick={disconnect}
-          className="px-4 py-2 text-sm text-red-600 hover:text-red-700"
+          className="text-sm text-error hover:text-error/80 transition-colors"
         >
           Disconnect
         </button>
@@ -37,9 +37,9 @@ export function ConnectWallet() {
   return (
     <button
       onClick={connect}
-      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+      className="button button-primary"
     >
       Connect Wallet
     </button>
   )
-}
+})
