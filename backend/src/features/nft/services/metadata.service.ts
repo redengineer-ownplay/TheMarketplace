@@ -2,7 +2,6 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { ethers } from 'ethers';
-import axios from 'axios';
 import { formatTokenUrl } from 'src/utils/strings/formatTokenUrl';
 import { isHtmlResponse } from 'src/utils/html/isHtmlResponse';
 
@@ -46,7 +45,7 @@ export class NFTMetadataService {
       await this.updateMetadataCache(contractAddress, tokenId, metadata);
 
       return metadata;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(
         `Error fetching metadata for ${contractAddress}:${tokenId} - ${error.message}`,
       );
@@ -80,7 +79,7 @@ export class NFTMetadataService {
 
       const formattedURI = formatTokenUrl(tokenURI);
       return await this.fetchAndParseMetadata(formattedURI);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(
         `Contract interaction error for ${contractAddress}:${tokenId} - ${error.message}`,
       );
@@ -91,56 +90,70 @@ export class NFTMetadataService {
   private async fetchAndParseMetadata(uri: string) {
     try {
       const formattedUri = formatTokenUrl(uri);
-
-      const gateways = [
-        'https://ipfs.io/ipfs/',
-        'https://cloudflare-ipfs.com/ipfs/',
-        'https://gateway.pinata.cloud/ipfs/',
-      ];
-
-      let response;
       const isIpfs = formattedUri.includes('/ipfs/');
+      let responseText: string | undefined;
 
       if (isIpfs) {
         const ipfsHash = formattedUri.split('/ipfs/')[1];
+        const gateways = [
+          'https://ipfs.io/ipfs/',
+          'https://cloudflare-ipfs.com/ipfs/',
+          'https://gateway.pinata.cloud/ipfs/',
+        ];
+
         for (const gateway of gateways) {
           try {
-            response = await axios.get(`${gateway}${ipfsHash}`, {
-              timeout: 5000,
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            const response = await fetch(`${gateway}${ipfsHash}`, {
+              method: 'GET',
               headers: {
                 Accept: 'application/json',
                 'User-Agent': 'NFT-Platform/1.0',
               },
+              signal: controller.signal,
             });
-            if (response.data && !isHtmlResponse(response.data)) {
-              break;
+            clearTimeout(timeoutId);
+            if (response.ok) {
+              const textData = await response.text();
+              if (!isHtmlResponse(textData)) {
+                responseText = textData;
+                break;
+              }
             }
           } catch {
             continue;
           }
         }
-        if (!response) {
+        if (!responseText) {
           throw new Error('Failed to fetch from all IPFS gateways');
         }
       } else {
-        response = await axios.get(formattedUri, {
-          timeout: 5000,
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const response = await fetch(formattedUri, {
+          method: 'GET',
           headers: {
             Accept: 'application/json',
             'User-Agent': 'NFT-Platform/1.0',
           },
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const textData = await response.text();
+        if (isHtmlResponse(textData)) {
+          throw new Error('Received HTML instead of JSON');
+        }
+        responseText = textData;
       }
 
-      if (isHtmlResponse(response.data)) {
-        throw new Error('Received HTML instead of JSON');
-      }
-
-      const metadata =
-        typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+      const metadata = typeof responseText === 'string' ? JSON.parse(responseText) : responseText;
 
       return this.validateAndFormatMetadata(metadata);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Metadata fetch error for ${uri}: ${error.message}`);
       return {
         name: 'Unknown NFT',
@@ -192,7 +205,7 @@ export class NFTMetadataService {
       }
 
       return null;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Cache check error: ${error.message}`);
       return null;
     }
@@ -218,7 +231,7 @@ export class NFTMetadataService {
       if (error) {
         this.logger.error(`Cache update error: ${error.message}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Failed to update metadata cache: ${error.message}`);
     }
   }

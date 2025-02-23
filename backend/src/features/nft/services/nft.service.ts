@@ -5,7 +5,6 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { NFTMetadataService } from './metadata.service';
 import { Transaction } from '../interfaces/transaction.interface';
 import { v4 as uuidv4 } from 'uuid';
-import axios from 'axios';
 import { UpdateTransactionDto } from '../dto/transfer.dto';
 import { PaginationDto } from '../dto/pagination.dto';
 import { TransactionService } from 'src/features/transaction/services/transaction.service';
@@ -72,7 +71,7 @@ export class NftService {
       await this.cacheService.set(cacheKey, JSON.stringify(response), 300);
 
       return response;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Error in getNFTs: ${error.message}`);
       return await this.getMetadata(walletAddress, limit, offset);
     }
@@ -104,7 +103,7 @@ export class NftService {
       const nfts = await this.processTransactions(walletAddress, transactions);
       await this.insertNFTsMetaData(walletAddress, nfts);
       return nfts;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Error in fetchAllNFTs: ${error.message}`);
       return this.getFallbackMetadata(walletAddress);
     }
@@ -134,7 +133,7 @@ export class NftService {
               tokenName: tx.tokenName || 'Unknown Token',
             });
           }
-        } catch (error) {
+        } catch (error: any) {
           this.logger.error(
             `Error processing token ${tx.tokenID} from ${tx.contractAddress}: ${error.message}`,
           );
@@ -150,7 +149,7 @@ export class NftService {
   private async getTokenMetadata(contractAddress: string, tokenId: string) {
     try {
       return await this.metadataService.getMetadata(contractAddress, tokenId);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(
         `Error fetching metadata for ${contractAddress}:${tokenId} - ${error.message}`,
       );
@@ -164,29 +163,36 @@ export class NftService {
 
   private async fetchNFTTransactions(walletAddress: string) {
     const polygonScanApiKey = this.configService.get<string>('POLYGON_SCAN_API_KEY');
-    try {
-      const response = await axios.get('https://api.polygonscan.com/api', {
-        params: {
-          module: 'account',
-          action: 'tokennfttx',
-          address: walletAddress,
-          startblock: '0',
-          endblock: '999999999',
-          sort: 'asc',
-          apikey: polygonScanApiKey,
-        },
-        timeout: 10000,
-      });
+    const params = new URLSearchParams({
+      module: 'account',
+      action: 'tokennfttx',
+      address: walletAddress,
+      startblock: '0',
+      endblock: '999999999',
+      sort: 'asc',
+      apikey: polygonScanApiKey || '',
+    });
+    const url = `https://api.polygonscan.com/api?${params.toString()}`;
 
-      if (response.data.status === '1' && Array.isArray(response.data.result)) {
-        return response.data.result;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const response = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.status === '1' && Array.isArray(data.result)) {
+        return data.result;
       }
       return [];
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Error fetching NFT transactions: ${error.message}`);
       return [];
     }
   }
+
   private async insertNFTsMetaData(walletAddress: string, nfts: any[]) {
     try {
       if (nfts.length === 0) return;
@@ -212,7 +218,7 @@ export class NftService {
             await this.supabase.from('nft_metadata').upsert(nft, {
               onConflict: 'contract_address,token_id',
             });
-          } catch (individualError) {
+          } catch (individualError: any) {
             this.logger.error(
               `Error updating individual NFT ${nft.contract_address}:${nft.token_id} - ${individualError.message}`,
             );
@@ -245,7 +251,7 @@ export class NftService {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Error caching NFTs: ${error.message}`);
     }
   }
@@ -266,16 +272,14 @@ export class NftService {
   ): Promise<boolean> {
     try {
       const contract = new ethers.Contract(contractAddress, this.NFT_ABI, this.provider);
-
       const owner = await contract.ownerOf(tokenId);
       return owner.toLowerCase() === walletAddress.toLowerCase();
     } catch {
       try {
         const contract = new ethers.Contract(contractAddress, this.NFT_ABI, this.provider);
-
         const balance = await contract.balanceOf(walletAddress, tokenId);
         return balance.gt(0);
-      } catch (innerError) {
+      } catch (innerError: any) {
         console.error('Error verifying NFT ownership:', innerError);
         return false;
       }
@@ -326,7 +330,7 @@ export class NftService {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-    } catch (error) {
+    } catch (error: any) {
       await this.supabase
         .from('transactions')
         .update({

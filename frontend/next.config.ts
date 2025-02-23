@@ -1,9 +1,8 @@
-// next.config.ts
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  poweredByHeader: false, // Security best practice
+  poweredByHeader: false,
   images: {
     remotePatterns: [
       {
