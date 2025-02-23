@@ -1,5 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
+import * as compression from 'compression';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -7,15 +9,18 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
-  const microservice = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-    transport: Transport.REDIS,
-    options: {
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
+  const app = await NestFactory.create(AppModule, {
+    abortOnError: false,
+    bodyParser: true,
+    cors: {
+      origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+      credentials: true,
     },
   });
 
-  const app = await NestFactory.create(AppModule);
+  app.use(helmet());
+
+  app.use(compression());
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -25,13 +30,9 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
+      disableErrorMessages: process.env.NODE_ENV === 'production',
     }),
   );
-
-  app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials: true,
-  });
 
   app.useGlobalFilters(new HttpExceptionFilter());
 
@@ -47,10 +48,22 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
+  const microservice = app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.REDIS,
+    options: {
+      host: process.env.REDIS_HOST || 'localhost',
+      port: parseInt(process.env.REDIS_PORT || '6379'),
+      retryAttempts: 5,
+      retryDelay: 1000,
+    },
+  });
+
   await microservice.listen();
   const appPort = process.env.PORT || 4000;
   await app.listen(appPort);
 
   console.log(`Application is running on: http://localhost:${appPort}`);
+  console.log(`Swagger docs available at: http://localhost:${appPort}/api/docs`);
 }
+
 bootstrap();
