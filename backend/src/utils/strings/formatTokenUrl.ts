@@ -18,4 +18,4 @@ export const formatTokenUrl = (uri: string): string => {
   }
 
   return uri;
-}
+};

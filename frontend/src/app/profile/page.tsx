@@ -1,6 +1,6 @@
 'use client'
 
-import { Protected } from '@/components/Protected'
+import { Protected } from '@/components/wallet/Protected'
 import { ProfileForm } from '@/components/profile/ProfileForm'
 import { TransactionHistory } from '@/components/transactions/TransactionHistory'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
