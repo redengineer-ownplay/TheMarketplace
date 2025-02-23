@@ -14,10 +14,15 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
-export const metadata: Metadata = generateMetadata({
-  title: 'Web3 Wallet Platform',
-  description: 'Manage your NFTs and tokens with our Web3 Wallet Platform',
-})
+export const metadata: Metadata = {
+  ...generateMetadata({
+    title: 'Web3 Wallet Platform',
+    description: 'Manage your NFTs and tokens with our Web3 Wallet Platform',
+  }),
+  viewport: 'width=device-width, initial-scale=1',
+  themeColor: '#000000',
+}
+
 
 export default function RootLayout({
   children,

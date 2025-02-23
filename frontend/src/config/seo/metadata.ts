@@ -18,8 +18,6 @@ export function generateMetadata({
     description,
     keywords: ['NFT', 'Web3', 'Wallet', 'Polygon', 'Blockchain', 'Ethereum'],
     authors: [{ name: 'Web3 Wallet Team' }],
-    viewport: 'width=device-width, initial-scale=1',
-    themeColor: '#000000',
     openGraph: {
       type: 'website',
       url: `${baseUrl}${path}`,
