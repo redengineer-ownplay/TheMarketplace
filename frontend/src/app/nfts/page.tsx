@@ -1,7 +1,7 @@
 'use client'
 
-import { NFTGallery } from '@/components/nfts/NFTGallery'
-import { Protected } from '@/components/wallet/Protected'
+import { NFTGallery } from '@/components/features/nfts/NFTGallery'
+import { Protected } from '@/components/features/wallet/Protected'
 
 export default function NFTsPage() {
   return (

@@ -1,5 +1,5 @@
 import { useWallet } from '@/providers/WalletProvider'
-import { ConnectWalletPrompt } from '@/components/wallet/ConnectWalletPrompt'
+import { ConnectWalletPrompt } from '@/components/features/wallet/ConnectWalletPrompt'
 
 interface ProtectedProps {
   children: React.ReactNode

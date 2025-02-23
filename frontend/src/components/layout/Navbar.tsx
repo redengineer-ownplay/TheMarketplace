@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link'
-import { ConnectWallet } from '@/components/wallet/WalletConnect'
+import { ConnectWallet } from '@/components/features/wallet/WalletConnect'
 import { useWallet } from '@/providers/WalletProvider';
 
 export default function Navbar() {

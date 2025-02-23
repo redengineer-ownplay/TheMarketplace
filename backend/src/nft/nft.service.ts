@@ -69,7 +69,7 @@ export class NftService {
         hasMore: total > offset + limit,
       };
 
-      await this.cacheService.set(cacheKey, JSON.stringify(response), 30);
+      await this.cacheService.set(cacheKey, JSON.stringify(response), 300);
 
       return response;
     } catch (error) {

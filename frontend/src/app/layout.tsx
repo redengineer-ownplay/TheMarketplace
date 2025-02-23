@@ -3,7 +3,7 @@ import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import { Providers } from '@/providers'
 import { Toaster } from '@/components/ui/Toaster'
-import { ErrorToast } from '@/components/notifications/ErrorToast'
+import { ErrorToast } from '@/components/features/notifications/ErrorToast'
 
 const inter = Inter({ subsets: ['latin'] })
 

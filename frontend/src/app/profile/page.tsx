@@ -1,8 +1,8 @@
 'use client'
 
-import { Protected } from '@/components/wallet/Protected'
-import { ProfileForm } from '@/components/profile/ProfileForm'
-import { TransactionHistory } from '@/components/transactions/TransactionHistory'
+import { Protected } from '@/components/features/wallet/Protected'
+import { ProfileForm } from '@/components/features/profile/ProfileForm'
+import { TransactionHistory } from '@/components/features/transactions/TransactionHistory'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { useWallet } from '@/providers/WalletProvider'
 
