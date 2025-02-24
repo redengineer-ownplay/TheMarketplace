@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { toast } from '@/hooks/useToast';
 import { Loader2, CheckCircle, XCircle, ExternalLink } from 'lucide-react';
@@ -14,7 +14,7 @@ interface TransactionStatusProps {
   onComplete: () => void;
 }
 
-export function TransactionStatus({ 
+export const TransactionStatus = memo(function TransactionStatus({ 
   transferId, 
   isOpen, 
   onClose, 
@@ -114,4 +114,4 @@ export function TransactionStatus({
       </DialogContent>
     </Dialog>
   );
-}
+})
