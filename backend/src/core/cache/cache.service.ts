@@ -6,10 +6,7 @@ export class CacheService {
   private readonly redis: Redis;
 
   constructor() {
-    this.redis = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
-    });
+    this.redis = new Redis(process.env.REDIS_PUBLIC_URL || '');
   }
 
   async get(key: string): Promise<string | null> {

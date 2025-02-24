@@ -48,18 +48,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  const microservice = app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.REDIS,
-    options: {
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      password: process.env.REDIS_PASSWORD,
-      retryAttempts: 5,
-      retryDelay: 1000,
-    },
-  });
-
-  await microservice.listen();
   const appPort = process.env.PORT || 4000;
   await app.listen(appPort);
 
