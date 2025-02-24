@@ -20,7 +20,10 @@
     "format": "concurrently \"npm run format:frontend\" \"npm run format:backend\"",
     "format:frontend": "cd frontend && npm run format",
     "format:backend": "cd backend && npm run format",
-    "docker:up": "docker-compose up -d"
+    "docker:up": "docker-compose up -d",
+    "audit:fix": "concurrently \"npm run audit:fix:frontend\" \"npm run audit:fix:backend\"",
+    "audit:fix:frontend": "cd frontend && npm audit fix",
+    "audit:fix:backend": "cd backend && npm audit fix"
   },
   "keywords": [
     "web3",
