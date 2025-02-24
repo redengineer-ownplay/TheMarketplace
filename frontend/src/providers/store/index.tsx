@@ -1,23 +1,21 @@
-"use client";
+'use client';
 
-import { type ReactNode, createContext, useRef, useContext } from "react";
+import { type ReactNode, createContext, useRef, useContext } from 'react';
 
-import { createAppStore, initAppStore } from "@/store";
-import { type GlobalStore } from "@/store/types";
+import { createAppStore, initAppStore } from '@/store';
+import { type GlobalStore } from '@/store/types';
 import {
   createSelectorFunctions,
   createSelectorHooks,
   ZustandFuncSelectors,
   ZustandHookSelectors,
-} from "auto-zustand-selectors-hook";
+} from 'auto-zustand-selectors-hook';
 
 export type AppStoreApi = ReturnType<typeof createAppStore>;
 
 let appStore: AppStoreApi;
 
-export const AppStoreContext = createContext<AppStoreApi | undefined>(
-  undefined,
-);
+export const AppStoreContext = createContext<AppStoreApi | undefined>(undefined);
 
 export interface AppStoreProviderProps {
   children: ReactNode;
@@ -36,11 +34,7 @@ export const AppStoreProvider = ({ children }: AppStoreProviderProps) => {
     storeRef.current = getAppStore();
   }
 
-  return (
-    <AppStoreContext.Provider value={storeRef.current}>
-      {children}
-    </AppStoreContext.Provider>
-  );
+  return <AppStoreContext.Provider value={storeRef.current}>{children}</AppStoreContext.Provider>;
 };
 
 /**

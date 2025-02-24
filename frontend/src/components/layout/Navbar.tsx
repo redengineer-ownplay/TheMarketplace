@@ -1,17 +1,17 @@
 'use client';
 
 import { memo } from 'react';
-import Link from 'next/link'
-import { WalletConnect } from '@/components/features/wallet/WalletConnect'
+import Link from 'next/link';
+import { WalletConnect } from '@/components/features/wallet/WalletConnect';
 import { useWallet } from '@/providers/WalletProvider';
 
 export const Navbar = memo(function Navbar() {
-  const { address } = useWallet()
+  const { address } = useWallet();
 
   return (
-    <nav className="bg-secondary/5 border-b border-border">
+    <nav className="border-b border-border bg-secondary/5">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="text-xl font-bold text-foreground">
               Web3 Wallet
@@ -20,13 +20,13 @@ export const Navbar = memo(function Navbar() {
               <div className="ml-10 flex items-baseline space-x-4">
                 <Link
                   href="/nfts"
-                  className="text-muted-foreground hover:text-foreground px-3 py-2 transition-colors"
+                  className="px-3 py-2 text-muted-foreground transition-colors hover:text-foreground"
                 >
                   My NFTs
                 </Link>
                 <Link
                   href="/profile"
-                  className="text-muted-foreground hover:text-foreground px-3 py-2 transition-colors"
+                  className="px-3 py-2 text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Profile
                 </Link>
@@ -37,5 +37,5 @@ export const Navbar = memo(function Navbar() {
         </div>
       </div>
     </nav>
-  )
-})
+  );
+});

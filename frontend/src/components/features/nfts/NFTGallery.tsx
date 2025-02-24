@@ -30,8 +30,8 @@ export function NFTGallery() {
   const { clearNFTs } = useAppStore().getState();
 
   const { isLoading, error } = useGetNFTs(
-    { walletAddress: address || "" },
-    { limit: ITEMS_PER_PAGE, offset: 0 }
+    { walletAddress: address || '' },
+    { limit: ITEMS_PER_PAGE, offset: 0 },
   );
 
   const handleTransferClick = useCallback((nft: NFT) => {
@@ -43,10 +43,7 @@ export function NFTGallery() {
     if (!address || isLoadingMore) return;
     setIsLoadingMore(true);
     try {
-      await getNFTs(
-        { walletAddress: address },
-        { limit: ITEMS_PER_PAGE, offset: nftListOffset }
-      );
+      await getNFTs({ walletAddress: address }, { limit: ITEMS_PER_PAGE, offset: nftListOffset });
     } catch (error: unknown) {
       console.error('Error loading more NFTs:', error);
       toast({
@@ -71,7 +68,7 @@ export function NFTGallery() {
 
   if (isLoading && !hasNFTs) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
+      <div className="animate-fade-in grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, index) => (
           <NFTCardSkeleton key={index} />
         ))}
@@ -89,7 +86,7 @@ export function NFTGallery() {
 
   if (!hasNFTs) {
     return (
-      <div className="text-center py-12 animate-fade-in">
+      <div className="animate-fade-in py-12 text-center">
         <h3 className="text-lg font-medium text-foreground">No NFTs found</h3>
         <p className="mt-2 text-sm text-muted-foreground">
           Once you receive NFTs, they will appear here.
@@ -109,13 +106,11 @@ export function NFTGallery() {
           <NFTCard
             nft={nft}
             onTransferClick={() => handleTransferClick(nft)}
-            className="animate-slide-up w-full h-full"
+            className="animate-slide-up h-full w-full"
           />
         )}
       />
-      {nftListHasMore && (
-        <LoadMore isLoadingMore={isLoadingMore} handleLoadMore={handleLoadMore} />
-      )}
+      {nftListHasMore && <LoadMore isLoadingMore={isLoadingMore} handleLoadMore={handleLoadMore} />}
       {selectedNFT && (
         <TransferModal
           nft={selectedNFT}
@@ -129,7 +124,7 @@ export function NFTGallery() {
             setSelectedNFT(null);
             setTimeout(async () => {
               clearNFTs();
-              await getNFTs({ walletAddress: address || "" }, { limit: ITEMS_PER_PAGE, offset: 0 });
+              await getNFTs({ walletAddress: address || '' }, { limit: ITEMS_PER_PAGE, offset: 0 });
             }, 3000);
           }}
         />

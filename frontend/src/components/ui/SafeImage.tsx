@@ -12,14 +12,7 @@ const SafeImage = ({ src, alt, ...props }: ImageProps) => {
     return <div>Image failed to load</div>;
   }
 
-  return (
-    <Image
-      src={src}
-      alt={alt}
-      onError={() => setError(true)}
-      {...props}
-    />
-  );
+  return <Image src={src} alt={alt} onError={() => setError(true)} {...props} />;
 };
 
 export default SafeImage;

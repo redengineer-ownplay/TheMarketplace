@@ -43,7 +43,9 @@ export function VirtualizedGrid<T>({
 
   const columnCount = Math.max(Math.floor((containerWidth + gap) / (minItemWidth + gap)), 1);
   const actualItemWidth =
-    columnCount === 1 ? containerWidth - gap * 2 : (containerWidth - gap * (columnCount + 1)) / columnCount;
+    columnCount === 1
+      ? containerWidth - gap * 2
+      : (containerWidth - gap * (columnCount + 1)) / columnCount;
   const rowCount = Math.ceil(items.length / columnCount);
 
   const rowVirtualizer = useVirtualizer({
@@ -56,9 +58,12 @@ export function VirtualizedGrid<T>({
   const totalHeight = gap + rowCount * (itemHeight + gap);
 
   return (
-    <div ref={parentRef} style={{ height: containerHeight, overflow: 'auto', position: 'relative' }}>
+    <div
+      ref={parentRef}
+      style={{ height: containerHeight, overflow: 'auto', position: 'relative' }}
+    >
       <div style={{ height: totalHeight, position: 'relative' }}>
-        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+        {rowVirtualizer.getVirtualItems().map(virtualRow => {
           const rowIndex = virtualRow.index;
           const startIndex = rowIndex * columnCount;
           const rowItems = items.slice(startIndex, startIndex + columnCount);

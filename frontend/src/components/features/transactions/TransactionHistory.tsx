@@ -16,7 +16,7 @@ const FORCE_SINGLE_COLUMN = 850;
 
 export function TransactionHistory() {
   const { toast } = useToast();
-  const { address } = useWallet()
+  const { address } = useWallet();
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const transactions = useAppStore().use.transactions();
   const transactionListHasMore = useAppStore().use.transactionListHasMore();
@@ -25,14 +25,17 @@ export function TransactionHistory() {
 
   const { isLoading, error } = useGetTransactions(
     { walletAddress: address || '' },
-    { limit: ITEMS_PER_PAGE, offset: 0 }
+    { limit: ITEMS_PER_PAGE, offset: 0 },
   );
 
   const handleLoadMore = useCallback(async () => {
     if (!address || isLoadingMore) return;
     setIsLoadingMore(true);
     try {
-      await getTransactions({ walletAddress: address || '' }, { limit: ITEMS_PER_PAGE, offset: transactionListOffset });
+      await getTransactions(
+        { walletAddress: address || '' },
+        { limit: ITEMS_PER_PAGE, offset: transactionListOffset },
+      );
     } catch (error: unknown) {
       console.error('Error loading more transactions:', error);
       toast({
@@ -57,15 +60,15 @@ export function TransactionHistory() {
 
   if (isLoading && !hasTransactions) {
     return (
-      <div className="flex justify-center items-center p-8">
-        <Loader2 className="w-6 h-6 animate-spin" />
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
   }
 
   if (!hasTransactions) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <h3 className="text-lg font-medium">No Transactions found</h3>
       </div>
     );
@@ -77,20 +80,20 @@ export function TransactionHistory() {
         <CardTitle>Transaction History</CardTitle>
       </CardHeader>
       <CardContent>
-      <VirtualizedGrid
-        items={transactions}
-        minItemWidth={FORCE_SINGLE_COLUMN}
-        itemHeight={ROW_HEIGHT}
-        width={`100%`}
-        gap={0}
-        containerHeight="60vh"
-        renderItem={(transaction) => (
-          <TransactionRow key={transaction.id} address={address || ''} tx={transaction} />
+        <VirtualizedGrid
+          items={transactions}
+          minItemWidth={FORCE_SINGLE_COLUMN}
+          itemHeight={ROW_HEIGHT}
+          width={`100%`}
+          gap={0}
+          containerHeight="60vh"
+          renderItem={transaction => (
+            <TransactionRow key={transaction.id} address={address || ''} tx={transaction} />
+          )}
+        />
+        {transactionListHasMore && (
+          <LoadMore handleLoadMore={handleLoadMore} isLoadingMore={isLoadingMore} />
         )}
-      />
-      {transactionListHasMore && (
-        <LoadMore handleLoadMore={handleLoadMore} isLoadingMore={isLoadingMore} />
-      )}
       </CardContent>
     </Card>
   );

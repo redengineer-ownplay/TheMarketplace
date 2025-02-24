@@ -1,31 +1,31 @@
-import { memo } from 'react'
-import { NFT } from '@/types/nft'
-import SafeImage from '@/components/ui/SafeImage'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { shortenAddress } from '@/utils/string/shortenWeb3Address'
+import { memo } from 'react';
+import { NFT } from '@/types/nft';
+import SafeImage from '@/components/ui/SafeImage';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { shortenAddress } from '@/utils/string/shortenWeb3Address';
 
 interface NFTCardProps {
-  nft: NFT
-  onTransferClick: () => void
-  className?: string
-  style?: React.CSSProperties
+  nft: NFT;
+  onTransferClick: () => void;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
-export const NFTCard = memo(function NFTCard({ 
-  nft, 
+export const NFTCard = memo(function NFTCard({
+  nft,
   onTransferClick,
   className = '',
-  style
+  style,
 }: NFTCardProps) {
   return (
-    <Card 
-      className={`transition-transform duration-200 hover:scale-102 ${className}`} 
+    <Card
+      className={`transition-transform duration-200 hover:scale-102 ${className}`}
       style={style}
     >
       <CardHeader className="p-0">
-        <div className="aspect-square relative rounded-t-lg overflow-hidden">
+        <div className="relative aspect-square overflow-hidden rounded-t-lg">
           {nft.metadata.image && (
-            <SafeImage 
+            <SafeImage
               src={nft.metadata.image}
               alt={nft.metadata.name || 'NFT'}
               fill
@@ -36,22 +36,19 @@ export const NFTCard = memo(function NFTCard({
         </div>
       </CardHeader>
       <CardContent className="p-4">
-        <CardTitle className="text-lg mb-2 truncate">
+        <CardTitle className="mb-2 truncate text-lg">
           {nft.metadata.name || 'Unnamed NFT'}
         </CardTitle>
         {nft.metadata.description && (
-          <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+          <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
             {nft.metadata.description}
           </p>
         )}
-        <div className="mt-4 flex justify-between items-center">
-          <span className="text-sm text-muted-foreground break-all p-4">
+        <div className="mt-4 flex items-center justify-between">
+          <span className="break-all p-4 text-sm text-muted-foreground">
             Token ID: {shortenAddress(nft.tokenId)}
           </span>
-          <button
-            onClick={onTransferClick}
-            className="button button-secondary text-sm"
-          >
+          <button onClick={onTransferClick} className="button button-secondary text-sm">
             Transfer
           </button>
         </div>

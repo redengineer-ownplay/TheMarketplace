@@ -1,24 +1,16 @@
-import { memo } from "react"
+import { memo } from 'react';
 
 export const TransactionStatus = memo(function TransactionStatus({ status }: { status: string }) {
   switch (status) {
     case 'completed':
       return (
-        <span className="text-xs bg-success/10 text-success px-2 py-1 rounded-full">
-          Completed
-        </span>
-      )
+        <span className="rounded-full bg-success/10 px-2 py-1 text-xs text-success">Completed</span>
+      );
     case 'pending':
       return (
-        <span className="text-xs bg-warning/10 text-warning px-2 py-1 rounded-full">
-          Pending
-        </span>
-      )
+        <span className="rounded-full bg-warning/10 px-2 py-1 text-xs text-warning">Pending</span>
+      );
     default:
-      return (
-        <span className="text-xs bg-error/10 text-error px-2 py-1 rounded-full">
-          Failed
-        </span>
-      )
+      return <span className="rounded-full bg-error/10 px-2 py-1 text-xs text-error">Failed</span>;
   }
-})
+});

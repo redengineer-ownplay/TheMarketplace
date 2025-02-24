@@ -1,24 +1,20 @@
-import { memo } from 'react'
-import { useWallet } from '@/providers/WalletProvider'
-import { Loader2 } from 'lucide-react'
+import { memo } from 'react';
+import { useWallet } from '@/providers/WalletProvider';
+import { Loader2 } from 'lucide-react';
 
 export const ConnectWalletPrompt = memo(function ConnectWalletPrompt() {
-  const { connect, isConnecting } = useWallet()
+  const { connect, isConnecting } = useWallet();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] p-8 bg-secondary/10 rounded-lg shadow-sm animate-fade-in">
-      <h2 className="text-2xl font-semibold mb-4 text-foreground">Connect Your Wallet</h2>
-      <p className="text-muted-foreground mb-8 text-center max-w-md">
+    <div className="animate-fade-in flex min-h-[400px] flex-col items-center justify-center rounded-lg bg-secondary/10 p-8 shadow-sm">
+      <h2 className="mb-4 text-2xl font-semibold text-foreground">Connect Your Wallet</h2>
+      <p className="mb-8 max-w-md text-center text-muted-foreground">
         Connect your wallet to access your NFTs and manage your transactions.
       </p>
-      <button
-        onClick={connect}
-        disabled={isConnecting}
-        className="button button-primary"
-      >
+      <button onClick={connect} disabled={isConnecting} className="button button-primary">
         {isConnecting ? (
           <div className="flex items-center space-x-2">
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" />
             <span>Connecting...</span>
           </div>
         ) : (
@@ -26,5 +22,5 @@ export const ConnectWalletPrompt = memo(function ConnectWalletPrompt() {
         )}
       </button>
     </div>
-  )
-})
+  );
+});

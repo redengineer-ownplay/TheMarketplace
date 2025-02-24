@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState, useEffect, useCallback, memo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
@@ -15,52 +15,52 @@ import { debounce } from '@/utils/performance/debounce';
 
 const ERC721_ABI = [
   {
-    "inputs": [
-      { "name": "from", "type": "address" },
-      { "name": "to", "type": "address" },
-      { "name": "tokenId", "type": "uint256" }
+    inputs: [
+      { name: 'from', type: 'address' },
+      { name: 'to', type: 'address' },
+      { name: 'tokenId', type: 'uint256' },
     ],
-    "name": "transferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'transferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
-      { "name": "operator", "type": "address" },
-      { "name": "approved", "type": "bool" }
+    inputs: [
+      { name: 'operator', type: 'address' },
+      { name: 'approved', type: 'bool' },
     ],
-    "name": "setApprovalForAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
+    name: 'setApprovalForAll',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
 ];
 
 const ERC1155_ABI = [
   {
-    "inputs": [
-      { "name": "from", "type": "address" },
-      { "name": "to", "type": "address" },
-      { "name": "id", "type": "uint256" },
-      { "name": "amount", "type": "uint256" },
-      { "name": "data", "type": "bytes" }
+    inputs: [
+      { name: 'from', type: 'address' },
+      { name: 'to', type: 'address' },
+      { name: 'id', type: 'uint256' },
+      { name: 'amount', type: 'uint256' },
+      { name: 'data', type: 'bytes' },
     ],
-    "name": "safeTransferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'safeTransferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
-      { "name": "operator", "type": "address" },
-      { "name": "approved", "type": "bool" }
+    inputs: [
+      { name: 'operator', type: 'address' },
+      { name: 'approved', type: 'bool' },
     ],
-    "name": "setApprovalForAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
+    name: 'setApprovalForAll',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
 ];
 
 interface TransferModalProps {
@@ -70,11 +70,11 @@ interface TransferModalProps {
   onTransferComplete: () => void;
 }
 
-export const TransferModal = memo(function TransferModal({ 
-  nft, 
-  isOpen, 
-  onClose, 
-  onTransferComplete 
+export const TransferModal = memo(function TransferModal({
+  nft,
+  isOpen,
+  onClose,
+  onTransferComplete,
 }: TransferModalProps) {
   const { address } = useWallet();
   const { toast } = useToast();
@@ -88,7 +88,8 @@ export const TransferModal = memo(function TransferModal({
   const isTransferring = useAppStore().use.isTransferring();
   const transferStatus = useAppStore().use.transferStatus();
   const transferStatusType = useAppStore().use.transferStatusType();
-  const { setTransferStatus, resetTransfer, setActiveTransfer, setTransferring } = useAppStore().getState();
+  const { setTransferStatus, resetTransfer, setActiveTransfer, setTransferring } =
+    useAppStore().getState();
 
   useEffect(() => {
     if (!isOpen) {
@@ -129,7 +130,7 @@ export const TransferModal = memo(function TransferModal({
         setIsValidating(false);
       }
     }, 500),
-    [toast]
+    [toast],
   );
 
   useEffect(() => {
@@ -179,17 +180,20 @@ export const TransferModal = memo(function TransferModal({
       const abi = nft.tokenType === 'ERC721' ? ERC721_ABI : ERC1155_ABI;
       const contract = new web3.eth.Contract(abi, nft.contractAddress);
 
-      const response = await transfer({
-        walletAddress: address,
-      },{
-        recipient: recipientAddress,
-        contractAddress: nft.contractAddress,
-        tokenId: nft.tokenId,
-        tokenType: nft.tokenType,
-      });
-      
+      const response = await transfer(
+        {
+          walletAddress: address,
+        },
+        {
+          recipient: recipientAddress,
+          contractAddress: nft.contractAddress,
+          tokenId: nft.tokenId,
+          tokenType: nft.tokenType,
+        },
+      );
+
       const transferId = response.id;
-      
+
       setActiveTransfer({
         id: transferId,
         fromAddress: address,
@@ -201,47 +205,53 @@ export const TransferModal = memo(function TransferModal({
         updatedAt: new Date().toISOString(),
       });
 
-      setTransferStatus('Requesting approval...', "warning");
+      setTransferStatus('Requesting approval...', 'warning');
       const approvalTx = await window.ethereum.request({
         method: 'eth_sendTransaction',
-        params: [{
-          from: address,
-          to: nft.contractAddress,
-          data: contract.methods.setApprovalForAll(nft.contractAddress, true).encodeABI()
-        }],
+        params: [
+          {
+            from: address,
+            to: nft.contractAddress,
+            data: contract.methods.setApprovalForAll(nft.contractAddress, true).encodeABI(),
+          },
+        ],
       });
 
-      setTransferStatus('Waiting for approval confirmation...', "warning");
+      setTransferStatus('Waiting for approval confirmation...', 'warning');
       await waitForTransaction(web3, approvalTx);
 
-      setTransferStatus('Transferring NFT...', "success");
-      const transferData = nft.tokenType === 'ERC721' 
-        ? contract.methods.transferFrom(address, recipientAddress, nft.tokenId).encodeABI()
-        : contract.methods.safeTransferFrom(address, recipientAddress, nft.tokenId, 1, '0x').encodeABI();
+      setTransferStatus('Transferring NFT...', 'success');
+      const transferData =
+        nft.tokenType === 'ERC721'
+          ? contract.methods.transferFrom(address, recipientAddress, nft.tokenId).encodeABI()
+          : contract.methods
+              .safeTransferFrom(address, recipientAddress, nft.tokenId, 1, '0x')
+              .encodeABI();
 
       const transferTx = await window.ethereum.request({
         method: 'eth_sendTransaction',
-        params: [{
-          from: address,
-          to: nft.contractAddress,
-          data: transferData
-        }],
+        params: [
+          {
+            from: address,
+            to: nft.contractAddress,
+            data: transferData,
+          },
+        ],
       });
 
-      setTransferStatus('Waiting for transfer confirmation...', "warning");
+      setTransferStatus('Waiting for transfer confirmation...', 'warning');
       await waitForTransaction(web3, transferTx);
 
       await updateStatus(
         { id: transferId },
         {
           status: 'completed',
-          txHash: transferTx
-        }
+          txHash: transferTx,
+        },
       );
 
       setShowTransactionStatus(true);
       onTransferComplete();
-
     } catch (error) {
       console.error('Transfer error:', error);
       toast({
@@ -257,11 +267,11 @@ export const TransferModal = memo(function TransferModal({
             { id: activeTransfer.id },
             {
               status: 'failed',
-              error: error instanceof Error ? error.message : 'Unknown error occurred'
-            }
+              error: error instanceof Error ? error.message : 'Unknown error occurred',
+            },
           );
-          
-          setTransferStatus('Unable to transfer', "error");
+
+          setTransferStatus('Unable to transfer', 'error');
         } catch (updateError) {
           console.error('Failed to update transfer status:', updateError);
         }
@@ -270,18 +280,18 @@ export const TransferModal = memo(function TransferModal({
       setTransferring(false);
     }
   }, [
-    address, 
-    nft, 
-    recipientAddress, 
-    toast, 
-    transfer, 
-    updateStatus, 
-    setActiveTransfer, 
-    setTransferStatus, 
-    setTransferring, 
-    waitForTransaction, 
-    activeTransfer, 
-    onTransferComplete
+    address,
+    nft,
+    recipientAddress,
+    toast,
+    transfer,
+    updateStatus,
+    setActiveTransfer,
+    setTransferStatus,
+    setTransferring,
+    waitForTransaction,
+    activeTransfer,
+    onTransferComplete,
   ]);
 
   return (
@@ -292,39 +302,39 @@ export const TransferModal = memo(function TransferModal({
             <DialogTitle>Transfer NFT</DialogTitle>
           </DialogHeader>
 
-          <div className="p-4 space-y-4">
-            <div className="p-4 bg-secondary/20 rounded-lg">
+          <div className="space-y-4 p-4">
+            <div className="rounded-lg bg-secondary/20 p-4">
               <h3 className="font-medium text-foreground">{nft?.metadata?.name || 'NFT'}</h3>
               <p className="text-sm text-muted-foreground">Token ID: {nft?.tokenId}</p>
               <p className="text-sm text-muted-foreground">Type: {nft?.tokenType}</p>
             </div>
 
             <div className="form-group">
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <label className="mb-1 block text-sm font-medium text-foreground">
                 Recipient Username
               </label>
               <input
                 type="text"
                 value={recipientUsername}
-                onChange={(e) => setRecipientUsername(e.target.value)}
+                onChange={e => setRecipientUsername(e.target.value)}
                 className="input w-full"
                 placeholder="Enter username"
                 disabled={isTransferring}
               />
               {isValidating && (
-                <p className="text-sm text-muted-foreground mt-1 flex items-center">
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <p className="mt-1 flex items-center text-sm text-muted-foreground">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Validating username...
                 </p>
               )}
-              {recipientAddress && (
-                <p className="text-sm text-success mt-1">Recipient found!</p>
-              )}
+              {recipientAddress && <p className="mt-1 text-sm text-success">Recipient found!</p>}
             </div>
 
             {transferStatus && (
-              <div className={`text-sm text-${transferStatusType} flex items-center animate-fade-in`}>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              <div
+                className={`text-sm text-${transferStatusType} animate-fade-in flex items-center`}
+              >
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 {transferStatus}
               </div>
             )}
@@ -344,7 +354,7 @@ export const TransferModal = memo(function TransferModal({
               >
                 {isTransferring ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Processing...
                   </>
                 ) : (

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { memo, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
@@ -14,18 +14,16 @@ interface TransactionStatusProps {
   onComplete: () => void;
 }
 
-export const TransactionStatus = memo(function TransactionStatus({ 
-  transferId, 
-  isOpen, 
-  onClose, 
-  onComplete 
+export const TransactionStatus = memo(function TransactionStatus({
+  transferId,
+  isOpen,
+  onClose,
+  onComplete,
 }: TransactionStatusProps) {
   const activeTransfer = useAppStore().use.activeTransfer();
   const { setActiveTransfer, resetTransfer } = useAppStore().getState();
 
-  const { data: transaction, error } = useGetTransactionStatus(
-    { id: transferId }
-  );
+  const { data: transaction, error } = useGetTransactionStatus({ id: transferId });
 
   useEffect(() => {
     if (!transferId || !isOpen) return;
@@ -63,7 +61,16 @@ export const TransactionStatus = memo(function TransactionStatus({
         });
       }
     }
-  }, [transferId, isOpen, transaction, error, setActiveTransfer, resetTransfer, onComplete, onClose]);
+  }, [
+    transferId,
+    isOpen,
+    transaction,
+    error,
+    setActiveTransfer,
+    resetTransfer,
+    onComplete,
+    onClose,
+  ]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -76,7 +83,7 @@ export const TransactionStatus = memo(function TransactionStatus({
           <div className="flex flex-col items-center justify-center">
             {!activeTransfer || activeTransfer.status === 'pending' ? (
               <div className="flex flex-col items-center">
-                <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+                <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
                 <p className="mt-4 text-lg">Processing transaction...</p>
                 <p className="mt-2 text-sm text-gray-500">
                   Please wait while your transaction is being processed
@@ -84,28 +91,26 @@ export const TransactionStatus = memo(function TransactionStatus({
               </div>
             ) : activeTransfer.status === 'completed' ? (
               <div className="flex flex-col items-center">
-                <CheckCircle className="w-12 h-12 text-green-500" />
+                <CheckCircle className="h-12 w-12 text-green-500" />
                 <p className="mt-4 text-lg">Transaction completed!</p>
                 {activeTransfer.txHash && (
                   <a
                     href={`https://polygonscan.com/tx/${activeTransfer.txHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 text-sm text-blue-500 hover:text-blue-600 flex items-center"
+                    className="mt-2 flex items-center text-sm text-blue-500 hover:text-blue-600"
                   >
                     View on PolygonScan
-                    <ExternalLink className="w-4 h-4 ml-1" />
+                    <ExternalLink className="ml-1 h-4 w-4" />
                   </a>
                 )}
               </div>
             ) : (
               <div className="flex flex-col items-center">
-                <XCircle className="w-12 h-12 text-red-500" />
+                <XCircle className="h-12 w-12 text-red-500" />
                 <p className="mt-4 text-lg">Transaction failed</p>
                 {activeTransfer?.error && (
-                  <p className="mt-2 text-sm text-red-600 text-center">
-                    {activeTransfer.error}
-                  </p>
+                  <p className="mt-2 text-center text-sm text-red-600">{activeTransfer.error}</p>
                 )}
               </div>
             )}
@@ -114,4 +119,4 @@ export const TransactionStatus = memo(function TransactionStatus({
       </DialogContent>
     </Dialog>
   );
-})
+});
