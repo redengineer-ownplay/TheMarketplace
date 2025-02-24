@@ -9,7 +9,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/AlertDialog"
 import { NFT } from "@/types/nft"
-import { LoadingSpinner } from "@/components/ui/Loading"
+import { LoadingSpinner } from "@/components/ui/progress/LoadingSpinner"
 
 interface TransactionConfirmationProps {
   nft: NFT

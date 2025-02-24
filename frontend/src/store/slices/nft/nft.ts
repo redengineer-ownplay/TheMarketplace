@@ -4,6 +4,8 @@ import { GlobalStore } from '@/store/types';
 import { NFT } from '@/types/nft';
 import { TransactionStatus } from '@/types/api';
 
+export type TransferStatusType = 'warning' | 'success' | 'error' | 'pending' | 'unknown';
+
 export interface NFTState {
   nfts: NFT[];
 
@@ -14,6 +16,7 @@ export interface NFTState {
   activeTransfer: TransactionStatus | null;
   isTransferring: boolean;
   transferStatus: string;
+  transferStatusType: TransferStatusType;
 }
 
 /**
@@ -40,7 +43,7 @@ export interface NFTActions {
 
   setActiveTransfer: (transfer: TransactionStatus | null) => void;
   setTransferring: (isTransferring: boolean) => void;
-  setTransferStatus: (status: string) => void;
+  setTransferStatus: (status: string, type: TransferStatusType) => void;
 
   clearNFTs: () => void;
   resetTransfer: () => void;
@@ -64,6 +67,7 @@ export const defaultInitState: NFTState = {
   activeTransfer: null,
   isTransferring: false,
   transferStatus: '',
+  transferStatusType: 'unknown',
 };
 
 export const createNFTState: StateCreator<
@@ -83,7 +87,8 @@ export const createNFTState: StateCreator<
 
   setActiveTransfer: (activeTransfer: TransactionStatus | null) => set({ activeTransfer }),
   setTransferring: (isTransferring: boolean) => set({ isTransferring }),
-  setTransferStatus: (transferStatus: string) => set({ transferStatus }),
+  setTransferStatus: (transferStatus: string, transferStatusType: TransferStatusType) =>
+    set({ transferStatus, transferStatusType }),
 
   clearNFTs: () =>
     set(() => ({

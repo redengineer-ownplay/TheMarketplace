@@ -1,61 +1,53 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { useWallet } from '@/providers/WalletProvider'
-import { useToast } from '@/hooks/useToast'
-import { useGetNFTs } from '@/services/api/nft/hooks'
-import { getNFTs } from '@/services/api/nft'
-import { useAppStore } from '@/store'
-import { NFT } from '@/types/nft'
-import { Loader2 } from 'lucide-react'
-import { TransferModal } from '@/components/features/transfers/TransferModal'
-import { NFTCard } from '@/components/features/nfts/NFTCard'
+import React, { useCallback, useState, useEffect } from 'react';
+import { useWallet } from '@/providers/WalletProvider';
+import { useToast } from '@/hooks/useToast';
+import { useGetNFTs } from '@/services/api/nft/hooks';
+import { getNFTs } from '@/services/api/nft';
+import { useAppStore } from '@/store';
+import { NFT } from '@/types/nft';
+import { TransferModal } from '@/components/features/transfers/TransferModal';
+import { NFTCard } from '@/components/features/nfts/NFTCard';
+import { VirtualizedGrid } from '@/components/ui/VirtualizedGrid';
+import { NFTCardSkeleton } from '@/components/ui/progress/SkeletonLoader';
+import { LoadMore } from '@/components/ui/buttons/LoadMore';
 
 const ITEMS_PER_PAGE = 12;
+const MIN_CARD_WIDTH = 350;
+const CARD_HEIGHT = 520;
+const GAP = 16;
 
 export function NFTGallery() {
-  const { address } = useWallet()
-  const { toast } = useToast()
-  const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null)
-  const [showTransferModal, setShowTransferModal] = useState(false)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const loadMoreRef = useRef<HTMLDivElement>(null)
-  
-  const nfts = useAppStore().use.nfts()
-  const nftListHasMore = useAppStore().use.nftListHasMore()
-  const nftListOffset = useAppStore().use.nftListOffset()
-  const hasNFTs = useAppStore().use.hasNFTs()
-  const { clearNFTs } = useAppStore().getState()
+  const { address } = useWallet();
+  const { toast } = useToast();
+  const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null);
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const nfts = useAppStore().use.nfts();
+  const nftListHasMore = useAppStore().use.nftListHasMore();
+  const nftListOffset = useAppStore().use.nftListOffset();
+  const hasNFTs = useAppStore().use.hasNFTs();
+  const { clearNFTs } = useAppStore().getState();
 
   const { isLoading, error } = useGetNFTs(
     { walletAddress: address || "" },
     { limit: ITEMS_PER_PAGE, offset: 0 }
   );
 
-  useEffect(() => {
-    if (!loadMoreRef.current || !nftListHasMore) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isLoadingMore) {
-          handleLoadMore();
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    observer.observe(loadMoreRef.current);
-    return () => observer.disconnect();
-  }, [nftListHasMore, isLoadingMore]);
+  const handleTransferClick = useCallback((nft: NFT) => {
+    setSelectedNFT(nft);
+    setShowTransferModal(true);
+  }, []);
 
   const handleLoadMore = useCallback(async () => {
     if (!address || isLoadingMore) return;
-
     setIsLoadingMore(true);
     try {
       await getNFTs(
         { walletAddress: address },
         { limit: ITEMS_PER_PAGE, offset: nftListOffset }
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading more NFTs:', error);
       toast({
         title: 'Error',
@@ -67,17 +59,21 @@ export function NFTGallery() {
     }
   }, [address, nftListOffset, isLoadingMore, toast]);
 
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to load NFTs',
+        variant: 'destructive',
+      });
+    }
+  }, [error, toast]);
+
   if (isLoading && !hasNFTs) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
         {Array.from({ length: 8 }).map((_, index) => (
-          <div key={index} className="nft-card animate-pulse">
-            <div className="aspect-square bg-secondary/50 rounded-lg" />
-            <div className="mt-4 space-y-3">
-              <div className="h-4 bg-secondary/50 rounded w-3/4" />
-              <div className="h-4 bg-secondary/50 rounded w-1/2" />
-            </div>
-          </div>
+          <NFTCardSkeleton key={index} />
         ))}
       </div>
     );
@@ -104,32 +100,22 @@ export function NFTGallery() {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {nfts.map((nft, index) => (
+      <VirtualizedGrid
+        items={nfts}
+        minItemWidth={MIN_CARD_WIDTH}
+        itemHeight={CARD_HEIGHT}
+        gap={GAP}
+        renderItem={(nft: NFT) => (
           <NFTCard
-            key={`${nft.contractAddress}-${nft.tokenId}`}
             nft={nft}
-            onTransferClick={() => {
-              setSelectedNFT(nft);
-              setShowTransferModal(true);
-            }}
-            className={`animate-slide-up`}
-            style={{ animationDelay: `${index * 0.1}s` }}
+            onTransferClick={() => handleTransferClick(nft)}
+            className="animate-slide-up w-full h-full"
           />
-        ))}
-      </div>
-
+        )}
+      />
       {nftListHasMore && (
-        <div 
-          ref={loadMoreRef}
-          className="mt-8 flex justify-center"
-        >
-          {isLoadingMore && (
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-          )}
-        </div>
+        <LoadMore isLoadingMore={isLoadingMore} handleLoadMore={handleLoadMore} />
       )}
-
       {selectedNFT && (
         <TransferModal
           nft={selectedNFT}
@@ -141,14 +127,10 @@ export function NFTGallery() {
           onTransferComplete={() => {
             setShowTransferModal(false);
             setSelectedNFT(null);
-
             setTimeout(() => {
               clearNFTs();
-              getNFTs(
-                { walletAddress: address || "" },
-                { limit: ITEMS_PER_PAGE, offset: 0 }
-              )
-            }, 1000)
+              getNFTs({ walletAddress: address || "" }, { limit: ITEMS_PER_PAGE, offset: 0 });
+            }, 1000);
           }}
         />
       )}

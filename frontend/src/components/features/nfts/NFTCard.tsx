@@ -2,6 +2,7 @@ import { memo } from 'react'
 import { NFT } from '@/types/nft'
 import SafeImage from '@/components/ui/SafeImage'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { shortenAddress } from '@/utils/string/shortenWeb3Address'
 
 interface NFTCardProps {
   nft: NFT
@@ -45,7 +46,7 @@ export const NFTCard = memo(function NFTCard({
         )}
         <div className="mt-4 flex justify-between items-center">
           <span className="text-sm text-muted-foreground break-all p-4">
-            Token ID: {nft.tokenId}
+            Token ID: {shortenAddress(nft.tokenId)}
           </span>
           <button
             onClick={onTransferClick}

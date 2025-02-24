@@ -87,6 +87,7 @@ export const TransferModal = memo(function TransferModal({
   const activeTransfer = useAppStore().use.activeTransfer();
   const isTransferring = useAppStore().use.isTransferring();
   const transferStatus = useAppStore().use.transferStatus();
+  const transferStatusType = useAppStore().use.transferStatusType();
   const { setTransferStatus, resetTransfer, setActiveTransfer, setTransferring } = useAppStore().getState();
 
   useEffect(() => {
@@ -200,7 +201,7 @@ export const TransferModal = memo(function TransferModal({
         updatedAt: new Date().toISOString(),
       });
 
-      setTransferStatus('Requesting approval...');
+      setTransferStatus('Requesting approval...', "warning");
       const approvalTx = await window.ethereum.request({
         method: 'eth_sendTransaction',
         params: [{
@@ -210,10 +211,10 @@ export const TransferModal = memo(function TransferModal({
         }],
       });
 
-      setTransferStatus('Waiting for approval confirmation...');
+      setTransferStatus('Waiting for approval confirmation...', "warning");
       await waitForTransaction(web3, approvalTx);
 
-      setTransferStatus('Transferring NFT...');
+      setTransferStatus('Transferring NFT...', "success");
       const transferData = nft.tokenType === 'ERC721' 
         ? contract.methods.transferFrom(address, recipientAddress, nft.tokenId).encodeABI()
         : contract.methods.safeTransferFrom(address, recipientAddress, nft.tokenId, 1, '0x').encodeABI();
@@ -227,7 +228,7 @@ export const TransferModal = memo(function TransferModal({
         }],
       });
 
-      setTransferStatus('Waiting for transfer confirmation...');
+      setTransferStatus('Waiting for transfer confirmation...', "warning");
       await waitForTransaction(web3, transferTx);
 
       await updateStatus(
@@ -259,6 +260,8 @@ export const TransferModal = memo(function TransferModal({
               error: error instanceof Error ? error.message : 'Unknown error occurred'
             }
           );
+          
+          setTransferStatus('Unable to transfer', "error");
         } catch (updateError) {
           console.error('Failed to update transfer status:', updateError);
         }
@@ -320,7 +323,7 @@ export const TransferModal = memo(function TransferModal({
             </div>
 
             {transferStatus && (
-              <div className="text-sm text-whitesmoke flex items-center animate-fade-in">
+              <div className={`text-sm text-${transferStatusType} flex items-center animate-fade-in`}>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 {transferStatus}
               </div>

@@ -74,7 +74,7 @@ export interface TransactionStatus {
   updatedAt: string;
 }
 
-export interface Transaction extends TransactionStatus {
+export interface Transaction {
   contract_address: string;
   created_at: Date;
   from_address: string;
