@@ -53,8 +53,7 @@ PRIVATE_KEY=your_private_key
 JWT_SECRET=your_jwt_secret
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_KEY=your_supabase_service_key
-REDIS_HOST=localhost
-REDIS_PORT=6379
+REDIS_PUBLIC_URL=
 ```
 
 For frontend (frontend/.env.local) (cp .env.example)::
@@ -129,6 +128,7 @@ npm run lint       # Run linting
 
 ```
 project-root/
+├── architecture/       # The architecture of the project
 ├── frontend/           # Next.js frontend application
 ├── backend/           # NestJS backend application
 ├── dbschema/          # Database schema and migrations
@@ -151,7 +151,7 @@ npm run start
 
 The project is configured for deployment on:
 - Frontend: Vercel
-- Backend: To be updated (Most likely DigitalOcean)
+- Backend & Redis: Railway
 - Database: Supabase
 
 Follow platform-specific deployment guides for detailed instructions.
