@@ -2,6 +2,7 @@ import { Loader2 } from "lucide-react"
 
 interface LoadMoreProps {
     isLoadingMore?: boolean
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleLoadMore: (...[]: any) => void
 }
 

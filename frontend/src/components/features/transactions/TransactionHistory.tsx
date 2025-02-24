@@ -33,7 +33,7 @@ export function TransactionHistory() {
     setIsLoadingMore(true);
     try {
       await getTransactions({ walletAddress: address || '' }, { limit: ITEMS_PER_PAGE, offset: transactionListOffset });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading more transactions:', error);
       toast({
         title: 'Error',

@@ -47,7 +47,7 @@ export function NFTGallery() {
         { walletAddress: address },
         { limit: ITEMS_PER_PAGE, offset: nftListOffset }
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading more NFTs:', error);
       toast({
         title: 'Error',
