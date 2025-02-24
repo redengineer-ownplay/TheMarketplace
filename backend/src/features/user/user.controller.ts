@@ -12,6 +12,8 @@ import { UserService } from './services/user.service';
 import { WalletAuthGuard } from 'src/common/guards/wallet-auth.guard';
 import { UpdateUserDto } from './dto/user.dto';
 import { User } from 'src/common/decorators/user.decorator';
+import { RateLimitGuard } from 'src/common/guards/rate-limit.guard';
+import { RateLimit } from 'src/common/decorators/rate-limit.decorator';
 
 interface JwtPayload {
   walletAddress: string;
@@ -27,6 +29,8 @@ export class UserController {
   @ApiOperation({ summary: 'Get user by wallet address' })
   @ApiResponse({ status: 200, description: 'Returns user details' })
   @ApiResponse({ status: 404, description: 'User not found' })
+  @UseGuards(RateLimitGuard)
+  @RateLimit({ limiterType: 'user' }) // 30 requests per minute
   async findByWalletAddress(@Param('walletAddress') walletAddress: string) {
     return this.userService.findByWalletAddress(walletAddress);
   }
@@ -34,6 +38,7 @@ export class UserController {
   @Get('by-username/:username')
   @ApiOperation({ summary: 'Get user by username' })
   @ApiResponse({ status: 200, description: 'Returns user details' })
+  @RateLimit({ limiterType: 'user' }) // 30 requests per minute
   async findByUsername(@Param('username') username: string) {
     return this.userService.findByUsername(username);
   }
@@ -43,6 +48,8 @@ export class UserController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user profile' })
   @ApiResponse({ status: 200, description: 'Profile updated successfully' })
+  @UseGuards(RateLimitGuard)
+  @RateLimit({ limiterType: 'user' }) // 30 requests per minute
   async updateProfile(@User() user: JwtPayload, @Body() updateDto: UpdateUserDto) {
     if (!user?.walletAddress) {
       throw new UnauthorizedException('Invalid token: missing wallet address');

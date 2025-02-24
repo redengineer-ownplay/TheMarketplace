@@ -94,3 +94,13 @@ npm run start:backend
 - ESLint + Prettier configuration
 - TypeScript
 - Docker compose for local development
+
+## Security Features
+
+The application implements several security measures:
+
+1. JWT-based authentication with wallet signatures
+2. Rate limiting to prevent API abuse
+3. HMAC signature verification
+4. Data validation and sanitization
+5. Secure storage of user information

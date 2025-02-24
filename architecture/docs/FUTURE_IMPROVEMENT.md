@@ -29,10 +29,8 @@ Areas where the platform could be enhanced in future iterations.
 - Sentry
 
 ### Backend
-- Implement WebSocket support for real-time updates
 - Add rate limiting
 - Improve logging system
-- Add API documentation with Swagger
 - Implement proper database migrations
 - Sentry
 

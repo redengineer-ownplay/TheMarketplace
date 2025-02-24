@@ -3,6 +3,8 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagg
 import { TransactionService } from 'src/features/transaction/services/transaction.service';
 import { WalletAuthGuard } from 'src/common/guards/wallet-auth.guard';
 import { PaginationDto } from 'src/features/nft/dto/pagination.dto';
+import { RateLimitGuard } from 'src/common/guards/rate-limit.guard';
+import { RateLimit } from 'src/common/decorators/rate-limit.decorator';
 
 @ApiTags('Transactions')
 @Controller('transactions')
@@ -17,6 +19,8 @@ export class TransactionController {
     status: 200,
     description: 'Returns transactions with pagination',
   })
+  @UseGuards(RateLimitGuard)
+  @RateLimit({ limiterType: 'transaction' }) // 30 requests per minute
   async getTransactions(
     @Param('walletAddress') walletAddress: string,
     @Query() paginationDto: PaginationDto,

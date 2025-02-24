@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { RateLimitMiddleware } from './common/middleware/rate-limit.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -14,7 +15,7 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: process.env.FRONTEND_URL?.split(',') || ['http://localhost:3000'], // Allow multiple origins
+    origin: process.env.FRONTEND_URL?.split(',') || ['http://localhost:3000'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Accept, Authorization',
     credentials: true,
@@ -35,6 +36,9 @@ async function bootstrap() {
       disableErrorMessages: process.env.NODE_ENV === 'production',
     }),
   );
+
+  const rateLimitMiddleware = app.get(RateLimitMiddleware);
+  app.use(rateLimitMiddleware.use.bind(rateLimitMiddleware));
 
   app.useGlobalFilters(new HttpExceptionFilter());
 

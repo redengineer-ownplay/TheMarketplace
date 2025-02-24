@@ -9,6 +9,10 @@ export class CacheService {
     this.redis = new Redis(process.env.REDIS_PUBLIC_URL || '');
   }
 
+  getRedisClient(): Redis {
+    return this.redis;
+  }
+
   async get(key: string): Promise<string | null> {
     return await this.redis.get(key);
   }

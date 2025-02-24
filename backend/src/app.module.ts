@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { UserModule } from './features/user/user.module';
@@ -8,6 +8,8 @@ import { SupabaseModule } from './core/database/supabase.module';
 import { SharedModule } from './core/shared/shared.module';
 import { TransactionModule } from './features/transaction/transaction.module';
 import { CacheModule } from './core/cache/cache.module';
+import { RateLimitModule } from './core/rate-limit/rate-limit.module';
+import { RateLimitMiddleware } from './common/middleware/rate-limit.middleware';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { CacheModule } from './core/cache/cache.module';
     }),
     SupabaseModule,
     CacheModule,
+    RateLimitModule,
     SharedModule,
     AuthModule,
     UserModule,
@@ -29,4 +32,8 @@ import { CacheModule } from './core/cache/cache.module';
     TransactionModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RateLimitMiddleware).forRoutes('*');
+  }
+}

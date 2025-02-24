@@ -16,6 +16,8 @@ import { WalletAuthGuard } from 'src/common/guards/wallet-auth.guard';
 import { TransferNFTDto, UpdateTransactionDto } from './dto/nft.dto';
 import { PaginationDto } from './dto/pagination.dto';
 import { User } from 'src/common/decorators/user.decorator';
+import { RateLimitGuard } from 'src/common/guards/rate-limit.guard';
+import { RateLimit } from 'src/common/decorators/rate-limit.decorator';
 
 @ApiTags('NFTs')
 @Controller('nfts')
@@ -26,6 +28,8 @@ export class NftController {
   @Get(':walletAddress')
   @ApiOperation({ summary: 'Get NFTs for a wallet address' })
   @ApiResponse({ status: 200, description: 'Returns NFTs with pagination' })
+  @UseGuards(RateLimitGuard)
+  @RateLimit({ limiterType: 'nft' })
   async getNFTs(
     @Param('walletAddress') walletAddress: string,
     @Query() paginationDto: PaginationDto,
@@ -36,6 +40,8 @@ export class NftController {
   @Get(':walletAddress/:contractAddress/:tokenId/verify')
   @ApiOperation({ summary: 'Verify NFT ownership' })
   @ApiResponse({ status: 200, description: 'Returns ownership status' })
+  @UseGuards(RateLimitGuard)
+  @RateLimit({ limiterType: 'nft:transfer' })
   async verifyOwnership(
     @Param('walletAddress') walletAddress: string,
     @Param('contractAddress') contractAddress: string,
@@ -49,6 +55,8 @@ export class NftController {
   @Post('transfer/:walletAddress')
   @ApiOperation({ summary: 'Transfer an NFT' })
   @ApiResponse({ status: 201, description: 'NFT transfer initiated' })
+  @UseGuards(RateLimitGuard)
+  @RateLimit({ limiterType: 'nft' })
   async transferNFT(
     @Param('walletAddress') walletAddress: string,
     @Body() transferDto: TransferNFTDto,
@@ -77,6 +85,8 @@ export class NftController {
   @Get('transaction/:id')
   @ApiOperation({ summary: 'Get transaction status' })
   @ApiResponse({ status: 200, description: 'Returns transaction details' })
+  @UseGuards(RateLimitGuard)
+  @RateLimit({ limiterType: 'nft' })
   async getTransactionStatus(@Param('id', ParseUUIDPipe) transactionId: string) {
     return this.nftService.getTransactionStatus(transactionId);
   }
@@ -84,6 +94,8 @@ export class NftController {
   @Put('transaction/:id')
   @ApiOperation({ summary: 'Update transaction status' })
   @ApiResponse({ status: 200, description: 'Transaction status updated' })
+  @UseGuards(RateLimitGuard)
+  @RateLimit({ limiterType: 'nft' })
   async updateTransactionStatus(
     @Param('id', ParseUUIDPipe) transactionId: string,
     @Body() updateDto: UpdateTransactionDto,

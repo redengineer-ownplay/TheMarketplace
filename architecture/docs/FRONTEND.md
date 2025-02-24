@@ -21,6 +21,14 @@ frontend/
 │   └── utils/          # Utility functions
 ```
 
+## Application Structure:
+
+- App Router: For routing and navigation
+- Components: Reusable UI components organized by feature
+- Services: API client for backend communication
+- Hooks: Custom hooks for state management and reusable logic
+- Store: Zustand-based global state management
+
 ## Key Design Decisions
 
 ### State Management
