@@ -12,10 +12,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     abortOnError: false,
     bodyParser: true,
-    cors: {
-      origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-      credentials: true,
-    },
+  });
+
+  app.enableCors({
+    origin: process.env.FRONTEND_URL?.split(',') || ['http://localhost:3000'], // Allow multiple origins
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
+    credentials: true,
   });
 
   app.use(helmet());
