@@ -41,7 +41,7 @@ export const apiConfig = {
   headers: {
     'Content-Type': 'application/json;charset=utf-8',
   },
-  withCredentials: false,
+  withCredentials: true,
   onRequest(config) {
     const accessToken = localStorage.getItem('jwt_token');
 
