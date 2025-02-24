@@ -19,6 +19,7 @@ The project uses a monorepo structure with two main workspaces:
 ```
 /
 ├── architecture/       # This
+├── performance/       # The performance simulated for performance trace and lighthouse
 ├── frontend/           # NextJS frontend application
 ├── backend/           # NestJS backend API
 ├── dbschema/         # Database schemas and migrations

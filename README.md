@@ -129,6 +129,7 @@ npm run lint       # Run linting
 ```
 project-root/
 ├── architecture/       # The architecture of the project
+├── performance/       # The performance simulated for performance trace and lighthouse
 ├── frontend/           # Next.js frontend application
 ├── backend/           # NestJS backend application
 ├── dbschema/          # Database schema and migrations
