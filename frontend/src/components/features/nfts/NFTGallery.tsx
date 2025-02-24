@@ -127,10 +127,10 @@ export function NFTGallery() {
           onTransferComplete={() => {
             setShowTransferModal(false);
             setSelectedNFT(null);
-            setTimeout(() => {
+            setTimeout(async () => {
               clearNFTs();
-              getNFTs({ walletAddress: address || "" }, { limit: ITEMS_PER_PAGE, offset: 0 });
-            }, 1000);
+              await getNFTs({ walletAddress: address || "" }, { limit: ITEMS_PER_PAGE, offset: 0 });
+            }, 3000);
           }}
         />
       )}
