@@ -1,7 +1,15 @@
-import useSWRImmutable from "swr/immutable";
-import { EndpointsKeys } from "@/services/api";
-import { getUserProfile, getUserProfileByUsername, updateUserProfile } from '@/services/api/userProfile';
-import { GetProfileByUsernamePathParams, GetProfilePathParams, UpdateProfileRequest } from "@/types/api/userProfile";
+import useSWRImmutable from 'swr/immutable';
+import { EndpointsKeys } from '@/services/api';
+import {
+  getUserProfile,
+  getUserProfileByUsername,
+  updateUserProfile,
+} from '@/services/api/userProfile';
+import {
+  GetProfileByUsernamePathParams,
+  GetProfilePathParams,
+  UpdateProfileRequest,
+} from '@/types/api/userProfile';
 
 export const useGetUserProfile = (urlPathParams: GetProfilePathParams) => {
   return useSWRImmutable(`${EndpointsKeys.getUserProfile}-${JSON.stringify(urlPathParams)}`, () =>

@@ -1,15 +1,15 @@
-import { ApiErrorResponse } from "@/types/api";
-import type { ResponseError } from "fetchff";
+import { ApiErrorResponse } from '@/types/api';
+import type { ResponseError } from 'fetchff';
 
 export class RPCError extends Error {
   constructor(message: string) {
     super(message);
 
-    this.name = "RPCError";
+    this.name = 'RPCError';
   }
 }
 
-export type GenericErrorResponse<Details> = ApiErrorResponse<Details>
+export type GenericErrorResponse<Details> = ApiErrorResponse<Details>;
 
 /**
  * Handles a fetchff ResponseError by updating the global error state in the Zustand store and rethrowing the error.

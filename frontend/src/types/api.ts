@@ -13,7 +13,6 @@ export interface PaginatedResponse<T> {
   hasMore: boolean;
 }
 
-
 export interface ApiErrorResponse<Details> {
   statusCode: number;
   message: 'Unauthorized' | 'DataValidation' | 'Conflict' | 'Not Found' | 'Internal Server Error';

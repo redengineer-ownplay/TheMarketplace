@@ -1,12 +1,8 @@
-import { endpoints } from "@/config/api/endpoints";
-import type {
-  EndpointNames,
-  EndpointsConfig,
-  EndpointsMethods,
-} from "@/config/api/types";
-import { handleErrorResponse } from "@/services/apiErrorHandler";
-import type { ApiHandlerConfig } from "fetchff";
-import { createApiFetcher } from "fetchff";
+import { endpoints } from '@/config/api/endpoints';
+import type { EndpointNames, EndpointsConfig, EndpointsMethods } from '@/config/api/types';
+import { handleErrorResponse } from '@/services/apiErrorHandler';
+import type { ApiHandlerConfig } from 'fetchff';
+import { createApiFetcher } from 'fetchff';
 
 type IEndpointKeys = {
   [key in EndpointNames]: key;
@@ -80,6 +76,4 @@ export const apiConfig = {
   },
 } satisfies ApiHandlerConfig<EndpointsConfig>;
 
-export const api = createApiFetcher<EndpointsMethods, EndpointsConfig>(
-  apiConfig,
-);
+export const api = createApiFetcher<EndpointsMethods, EndpointsConfig>(apiConfig);

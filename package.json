@@ -18,8 +18,8 @@
     "lint:frontend": "cd frontend && npm run lint",
     "lint:backend": "cd backend && npm run lint",
     "format": "concurrently \"npm run format:frontend\" \"npm run format:backend\"",
-    "format:frontend": "cd frontend && npm run lint",
-    "format:backend": "cd backend && npm run lint",
+    "format:frontend": "cd frontend && npm run format",
+    "format:backend": "cd backend && npm run format",
     "docker:up": "docker-compose up -d"
   },
   "keywords": [

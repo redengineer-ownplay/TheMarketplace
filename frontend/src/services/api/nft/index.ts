@@ -57,7 +57,7 @@ export async function transferNFT(
   const { setTransferring, setTransferStatus } = getAppStore().getState();
 
   setTransferring(true);
-  setTransferStatus('Initiating transfer...', "warning");
+  setTransferStatus('Initiating transfer...', 'warning');
 
   try {
     const { data } = await api.transferNFT({

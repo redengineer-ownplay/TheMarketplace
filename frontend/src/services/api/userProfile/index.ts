@@ -1,7 +1,11 @@
-import { getAppStore } from "@/providers/store";
-import { api } from "@/services/api";
-import { ProfileData } from "@/types/api";
-import { GetProfileByUsernamePathParams, GetProfilePathParams, UpdateProfileRequest } from "@/types/api/userProfile";
+import { getAppStore } from '@/providers/store';
+import { api } from '@/services/api';
+import { ProfileData } from '@/types/api';
+import {
+  GetProfileByUsernamePathParams,
+  GetProfilePathParams,
+  UpdateProfileRequest,
+} from '@/types/api/userProfile';
 
 export async function getUserProfile(urlPathParams: GetProfilePathParams): Promise<ProfileData> {
   const { setUserProfile } = getAppStore().getState();
@@ -15,7 +19,6 @@ export async function getUserProfile(urlPathParams: GetProfilePathParams): Promi
   return data.data;
 }
 
-
 export async function updateUserProfile(body: UpdateProfileRequest): Promise<ProfileData> {
   const { setUserProfile } = getAppStore().getState();
 
@@ -27,7 +30,6 @@ export async function updateUserProfile(body: UpdateProfileRequest): Promise<Pro
 
   return data.data;
 }
-
 
 export async function getUserProfileByUsername(
   urlPathParams: GetProfileByUsernamePathParams,

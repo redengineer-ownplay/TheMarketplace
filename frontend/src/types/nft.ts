@@ -11,6 +11,6 @@ export interface NFTMetadata {
 export interface NFT {
   contractAddress: string;
   tokenId: string;
-  tokenType: "ERC721" | "ERC1155";
+  tokenType: 'ERC721' | 'ERC1155';
   metadata: NFTMetadata;
 }

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { StateCreator } from "zustand";
-import { GlobalStore } from "@/store/types";
+import { StateCreator } from 'zustand';
+import { GlobalStore } from '@/store/types';
 
 export interface ErrorMessage {
   message: string;
@@ -17,11 +17,7 @@ export interface ErroActions {
   clearErrors: () => void;
 }
 
-export type ErrorType =
-  | "API_ERROR"
-  | "GENERIC_CLIENT_ERROR"
-  | "NETWORK_ERROR"
-  | "";
+export type ErrorType = 'API_ERROR' | 'GENERIC_CLIENT_ERROR' | 'NETWORK_ERROR' | '';
 
 /**
  * The error state.
@@ -50,11 +46,11 @@ export const defaultInitState: ErrorState = {
 
 export const createErrorState: StateCreator<
   GlobalStore,
-  [["zustand/devtools", never]],
+  [['zustand/devtools', never]],
   [],
   ErrorSlice
-> = (set) => ({
+> = set => ({
   ...defaultInitState,
-  setErrors: (errors) => set({ errors }),
+  setErrors: errors => set({ errors }),
   clearErrors: () => set({ errors: [] }),
 });

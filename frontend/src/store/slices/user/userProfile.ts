@@ -2,10 +2,10 @@
  * UserProfile state
  */
 
-import { StateCreator } from "zustand";
-import { createComputed } from "zustand-computed";
-import { GlobalStore } from "@/store/types";
-import { ProfileData } from "@/types/api";
+import { StateCreator } from 'zustand';
+import { createComputed } from 'zustand-computed';
+import { GlobalStore } from '@/store/types';
+import { ProfileData } from '@/types/api';
 
 export interface UserProfileState {
   profile: ProfileData;
@@ -20,9 +20,7 @@ export type UserProfileComputed = object;
  * This is an example of a UserProfile state that depends on other states.
  * @documentation https://github.com/chrisvander/zustand-computed
  */
-const computed = createComputed(
-  () => ({}),
-);
+const computed = createComputed(() => ({}));
 
 /**
  * UserProfile actions
@@ -35,9 +33,7 @@ export interface UserProfileActions {
 /**
  * UserProfile slice
  */
-export type UserProfileSlice = UserProfileState &
-  UserProfileComputed &
-  UserProfileActions;
+export type UserProfileSlice = UserProfileState & UserProfileComputed & UserProfileActions;
 
 /**
  * Default state for the user profile state.

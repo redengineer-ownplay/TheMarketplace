@@ -1,4 +1,4 @@
-import type { Endpoint, QueryParams, UrlPathParams } from "fetchff";
+import type { Endpoint, QueryParams, UrlPathParams } from 'fetchff';
 import { ApiResponse, ProfileData } from '@/types/api';
 
 export interface UserMethods {
@@ -74,7 +74,12 @@ export interface UserMethods {
         }
    * }
    */
-  updateUserProfile: Endpoint<UpdateUserProfileResponse, QueryParams, UrlPathParams, UpdateProfileRequest>;
+  updateUserProfile: Endpoint<
+    UpdateUserProfileResponse,
+    QueryParams,
+    UrlPathParams,
+    UpdateProfileRequest
+  >;
 
   /**
    * Endpoint for retrieving user profile by username
@@ -114,7 +119,7 @@ export interface UserMethods {
 }
 
 export interface GetProfilePathParams {
-  walletAddress: string
+  walletAddress: string;
 }
 
 export interface GetProfileByUsernamePathParams {
@@ -132,5 +137,3 @@ export type UpdateUserProfileResponse = ApiResponse<ProfileData>;
 export type GetUserProfileResponse = ApiResponse<ProfileData>;
 
 export type GetUserProfileByUsenrameResponse = ApiResponse<ProfileData>;
-
-
